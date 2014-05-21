@@ -22,11 +22,11 @@ Arguments:
 
 Options:
     -h, --help         Print this help and exit
-    -r, --remove       Remove `TAG' from URL
+    -r, --remove       Remove TAG from URL
     -d, --delete       Delete an url from the database
     -l, --list-any     List the urls with any of TAG
     -L, --list-every   List the urls with every of TAG
-    -f, --file FILE    Use `FILE' as the database
+    -f, --file FILE    Use FILE as the database
                        Default is ~/.database
 
 Example

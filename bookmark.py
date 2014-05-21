@@ -19,16 +19,20 @@
 # END_OF_LICENSE
 #
 """
-Usage: bookmark [-h] [-f FILE] [-r] URL TAG...
-       bookmark [-h] [-f FILE]  -d  URL
-       bookmark [-h] [-f FILE]  -l  TAG...
-       bookmark [-h] [-f FILE]  -L  TAG...
-       bookmark [-h] [-f FILE]  URL
+Simple command line browser independant bookmark utility.
+
+Usage: bookmark [options] [-r] URL TAG...
+       bookmark [options]  -d  URL
+       bookmark [options]  -l  TAG...
+       bookmark [options]  -L  TAG...
+       bookmark [options]  URL
 
 
 Arguments:
     URL     The url to bookmark
             If alone, print the sorted tags associated with URL
+            If the url corresponds to an existing file,
+            the absolute path is substituted to URL
     TAG     The tags to use with the url.
             'all' is a special tag that matches every other tag
 
@@ -40,6 +44,7 @@ Options:
     -L, --list-every   List the urls with every of TAG
     -f, --file FILE    Use FILE as the database
                        Default is ~/.database
+    --no-path-subs     Disable file path substitution
 """
 
 import os
@@ -91,13 +96,17 @@ def list_tags(database, url):
 def main():
     args = docopt(__doc__)
     url = args["URL"]
+    if os.path.exists(url) and not args["--no-path-subs"]:
+        url = os.path.abspath(url)
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
     try:
         if not os.path.exists(d_file):
             print('The file "' + d_file + '" does not exists: creating it.',
                     file=os.sys.stderr)
-        database = yaml.load(open(d_file, "a+")) or {}
+            open(d_file, "a+").close()
+
+        database = yaml.load(open(d_file)) or {}
 
     except PermissionError as e:
         os.sys.exit(e)

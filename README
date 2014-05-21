@@ -2,21 +2,29 @@ Description
 ===========
 
 Simple command line browser independant bookmark utility.
+
 The file generated is easy to modify by hand as it is written in YAML.
+
+In order to help using it to tag files and directories as well as urls, it
+recognises if the URL given is that of an existing file. If so, the absolute
+path is substituted to help scripting by piping the output and to escape
+ambiguity. This behaviour can be stopped by using the "--no-path-subs" option.
 
 Documentation
 =============
 
-Usage: bookmark [-h] [-f FILE] [-r] URL TAG...
-       bookmark [-h] [-f FILE]  -d  URL
-       bookmark [-h] [-f FILE]  -l  TAG...
-       bookmark [-h] [-f FILE]  -L  TAG...
-       bookmark [-h] [-f FILE]  URL
+Usage: bookmark [options] [-r] URL TAG...
+       bookmark [options]  -d  URL
+       bookmark [options]  -l  TAG...
+       bookmark [options]  -L  TAG...
+       bookmark [options]  URL
 
 
 Arguments:
     URL     The url to bookmark
             If alone, print the sorted tags associated with URL
+            If the url corresponds to an existing file,
+            the absolute path is substituted to URL
     TAG     The tags to use with the url.
             'all' is a special tag that matches every other tag
 
@@ -28,6 +36,7 @@ Options:
     -L, --list-every   List the urls with every of TAG
     -f, --file FILE    Use FILE as the database
                        Default is ~/.database
+    --no-path-subs     Disable file path substitution
 
 Example
 =======

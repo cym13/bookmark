@@ -1,0 +1,80 @@
+Description
+===========
+
+Simple command line browser independant bookmark utility.
+The file generated is easy to modify by hand as it is written in YAML.
+
+Documentation
+=============
+
+Usage: bookmark [-h] [-f FILE] [-r] URL TAG...
+       bookmark [-h] [-f FILE]  -d  URL
+       bookmark [-h] [-f FILE]  -l  TAG...
+       bookmark [-h] [-f FILE]  -L  TAG...
+       bookmark [-h] [-f FILE]  URL
+
+
+Arguments:
+    URL     The url to bookmark
+            If alone, print the sorted tags associated with URL
+    TAG     The tags to use with the url.
+            'all' is a special tag that matches every other tag
+
+Options:
+    -h, --help         Print this help and exit
+    -r, --remove       Remove `TAG' from URL
+    -d, --delete       Delete an url from the database
+    -l, --list-any     List the urls with any of TAG
+    -L, --list-every   List the urls with every of TAG
+    -f, --file FILE    Use `FILE' as the database
+                       Default is ~/.database
+
+Example
+=======
+
+    $ bookmark "http://duckduckgo.com" bad search engine
+
+    $ bookmark "http://google.com" search engine
+
+    $ bookmark -l search engine
+    http://duckduckgo.com
+    http://google.com
+
+    $ bookmark -r "http://duckduckgo.com" bad
+
+    $ bookmark "http://duckduckgo.com" cool
+
+    $ bookmark "http://duckduckgo.com"
+    cool
+    engine
+    search
+
+    $ bookmark -L search engine
+    http://duckduckgo.com
+    http://google.com
+
+    $ bookmark -L bad search engine
+    http://google.com
+
+
+Dependencies
+============
+
+docopt   https://github.com/docopt/docopt or "pip install docopt"
+pyyaml   http://pyyaml.org/               or "pip install pyyaml"
+
+License
+=======
+
+This program is under the GPLv3 License.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+Contact
+=======
+
+Main developper: Cédric Picard
+Email:           cedric.picard@efrei.net
+Twitter:         @Cym13
+GPG:             383A 76B9 D68D 2BD6 9D2B  4716 E3B9 F4FE 5CED 42CB

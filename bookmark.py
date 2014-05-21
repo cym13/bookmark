@@ -94,8 +94,12 @@ def main():
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
     try:
-        database = yaml.load(open(d_file, "r")) or {}
-    except FileNotFoundError as e:
+        if not os.path.exists(d_file):
+            print('The file "' + d_file + '" does not exists: creating it.',
+                    file=os.sys.stderr)
+        database = yaml.load(open(d_file, "a+")) or {}
+
+    except PermissionError as e:
         os.sys.exit(e)
 
     tags = args["TAG"]

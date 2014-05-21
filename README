@@ -34,7 +34,7 @@ Example
 
     $ bookmark "http://duckduckgo.com" bad search engine
 
-    $ bookmark "http://google.com" search engine
+    $ bookmark "http://google.com" bad search engine
 
     $ bookmark -l search engine
     http://duckduckgo.com

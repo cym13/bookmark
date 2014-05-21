@@ -43,7 +43,7 @@ Options:
     -l, --list-any     List the urls with any of TAG
     -L, --list-every   List the urls with every of TAG
     -f, --file FILE    Use FILE as the database
-                       Default is ~/.database
+                       Default is ~/.bookmarks
     --no-path-subs     Disable file path substitution
 """
 

@@ -96,7 +96,7 @@ def list_tags(database, url):
 def main():
     args = docopt(__doc__)
     url = args["URL"]
-    if os.path.exists(url) and not args["--no-path-subs"]:
+    if url and os.path.exists(url) and not args["--no-path-subs"]:
         url = os.path.abspath(url)
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"

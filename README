@@ -22,7 +22,7 @@ Usage: bookmark [options] [-r] URL TAG...
 
 Arguments:
     URL     The url to bookmark
-            If alone, print the sorted tags associated with URL
+            If alone, print the tags associated with URL
             If the url corresponds to an existing file,
             the absolute path is substituted to URL
             If URL is '-', then the program looks for a list of URL

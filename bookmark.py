@@ -26,11 +26,12 @@ Usage: bookmark [options] [-r] URL TAG...
        bookmark [options]  -l  TAG...
        bookmark [options]  -L  TAG...
        bookmark [options]  URL
+       bookmark [options]  -t
 
 
 Arguments:
     URL     The url to bookmark
-            If alone, print the sorted tags associated with URL
+            If alone, print the tags associated with URL
             If the url corresponds to an existing file,
             the absolute path is substituted to URL
             If URL is '-', then the program looks for a list of URL
@@ -39,14 +40,15 @@ Arguments:
             'all' is a special tag that matches every other tag
 
 Options:
-    -h, --help         Print this help and exit
-    -r, --remove       Remove TAG from URL
-    -d, --delete       Delete an url from the database
-    -l, --list-any     List the urls with any of TAG
-    -L, --list-every   List the urls with every of TAG
-    -f, --file FILE    Use FILE as the database
-                       Default is ~/.bookmarks
-    --no-path-subs     Disable file path substitution
+    -h, --help          Print this help and exit
+    -r, --remove        Remove TAG from URL
+    -d, --delete        Delete an url from the database
+    -l, --list-any      List the urls with any of TAG
+    -L, --list-every    List the urls with every of TAG
+    -f, --file FILE     Use FILE as the database
+                        Default is ~/.bookmarks
+    -t, --tags          List every tag present in the database
+    -n, --no-path-subs  Disable file path substitution
 """
 
 import os
@@ -57,8 +59,6 @@ def add(database, url, tags):
     if url in database:
         for tag in tags:
             database[url].append(tag)
-            database[url].sort()
-
     else:
         database[url] = list(tags)
 
@@ -95,6 +95,13 @@ def list_tags(database, url):
         yield each
 
 
+def list_every_tags(database):
+    result = set()
+    for each in database:
+        result = result.union(set(database[each]))
+    return result
+
+
 def manage_url(url, tags, d_file, database, args):
     if url and os.path.exists(url) and not args["--no-path-subs"]:
         url = os.path.abspath(url)
@@ -114,6 +121,10 @@ def manage_url(url, tags, d_file, database, args):
     elif args["--remove"]:
         remove(database, url, tags)
         yaml.dump(database, open(d_file, 'w'))
+
+    elif args["--tags"]:
+        for tag in list_every_tags(database):
+            print(tag)
 
     elif args["TAG"]:
         add(database, url, tags)

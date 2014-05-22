@@ -25,6 +25,8 @@ Arguments:
             If alone, print the sorted tags associated with URL
             If the url corresponds to an existing file,
             the absolute path is substituted to URL
+            If URL is '-', then the program looks for a list of URL
+            comming from the standard input.
     TAG     The tags to use with the url.
             'all' is a special tag that matches every other tag
 
@@ -64,6 +66,8 @@ Example
 
     $ bookmark -L bad search engine
     http://google.com
+
+    $ cat urls | bookmark - some_urls
 
 
 Dependencies

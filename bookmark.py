@@ -33,6 +33,8 @@ Arguments:
             If alone, print the sorted tags associated with URL
             If the url corresponds to an existing file,
             the absolute path is substituted to URL
+            If URL is '-', then the program looks for a list of URL
+            comming from the standard input.
     TAG     The tags to use with the url.
             'all' is a special tag that matches every other tag
 
@@ -93,29 +95,9 @@ def list_tags(database, url):
         yield each
 
 
-def main():
-    args = docopt(__doc__)
-    url = args["URL"]
+def manage_url(url, tags, d_file, database, args):
     if url and os.path.exists(url) and not args["--no-path-subs"]:
         url = os.path.abspath(url)
-
-    d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
-    try:
-        if not os.path.exists(d_file):
-            print('The file "' + d_file + '" does not exists: creating it.',
-                    file=os.sys.stderr)
-            open(d_file, "a+").close()
-
-        database = yaml.load(open(d_file)) or {}
-
-    except PermissionError as e:
-        os.sys.exit(e)
-
-    tags = args["TAG"]
-    if "all" in [x.lower() for x in tags]:
-        tags = set()
-        for each in database.values():
-            tags = tags.union(set(each))
 
     if args["--delete"]:
         delete(database, url)
@@ -140,6 +122,37 @@ def main():
     else:
         for tag in list_tags(database, url):
             print(tag)
+
+
+def main():
+    args = docopt(__doc__)
+
+    if args["URL"] == '-':
+        urls = os.sys.stdin.read().splitlines()
+    else:
+        urls = [ args["URL"] ]
+
+    d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
+    try:
+        if not os.path.exists(d_file):
+            print('The file "' + d_file + '" does not exists: creating it.',
+                    file=os.sys.stderr)
+            open(d_file, "a+").close()
+
+        database = yaml.load(open(d_file)) or {}
+
+    except PermissionError as e:
+        os.sys.exit(e)
+
+    tags = args["TAG"]
+    if "all" in [x.lower() for x in tags]:
+        tags = set()
+        for each in database.values():
+            tags = tags.union(set(each))
+
+    for url in urls:
+        manage_url(url, tags, d_file, database, args)
+
 
 if __name__ == "__main__":
     try:

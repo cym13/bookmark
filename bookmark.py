@@ -86,7 +86,7 @@ def list_any(database, tags):
 
 def list_every(database, tags):
     for url in database:
-        if set(tags) == set(database[url]):
+        if set(tags).issubset(set(database[url])):
             yield url
 
 

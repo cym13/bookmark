@@ -23,11 +23,10 @@ Simple command line browser independant bookmark utility.
 
 Usage: bookmark [options] [-r] URL TAG...
        bookmark [options]  -d  URL
-       bookmark [options]  -l  TAG...
+       bookmark [options]  -l  [TAG]...
        bookmark [options]  -L  TAG...
        bookmark [options]  URL
        bookmark [options]  -t
-
 
 Arguments:
     URL     The url to bookmark
@@ -37,13 +36,13 @@ Arguments:
             If URL is '-', then the program looks for a list of URL
             comming from the standard input.
     TAG     The tags to use with the url.
-            'all' is a special tag that matches every other tag
 
 Options:
     -h, --help          Print this help and exit
     -r, --remove        Remove TAG from URL
     -d, --delete        Delete an url from the database
     -l, --list-any      List the urls with any of TAG
+                        If no tag is given, list all urls
     -L, --list-every    List the urls with every of TAG
     -f, --file FILE     Use FILE as the database
                         Default is ~/.bookmarks
@@ -80,7 +79,7 @@ def delete(database, url):
 
 def list_any(database, tags):
     for url in database:
-        if set(tags).intersection(set(database[url])) != set():
+        if set(tags).intersection(set(database[url])) != set() or tags == []:
             yield url
 
 
@@ -156,11 +155,6 @@ def main():
         os.sys.exit(e)
 
     tags = args["TAG"]
-    if "all" in [x.lower() for x in tags]:
-        tags = set()
-        for each in database.values():
-            tags = tags.union(set(each))
-
     for url in urls:
         manage_url(url, tags, d_file, database, args)
 

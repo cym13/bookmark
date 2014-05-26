@@ -10,15 +10,19 @@ recognises if the URL given is that of an existing file. If so, the absolute
 path is substituted to help scripting by piping the output and to escape
 ambiguity. This behaviour can be stopped by using the "--no-path-subs" option.
 
+One way to see this program is to consider it a simple hashmap utility for
+bash that associates a set of strings (the tags) to another one (the url).
+Feel free to find other ways to use this program!
+
 Documentation
 =============
 
 Usage: bookmark [options] [-r] URL TAG...
        bookmark [options]  -d  URL
-       bookmark [options]  -l  TAG...
+       bookmark [options]  -l  [TAG]...
        bookmark [options]  -L  TAG...
        bookmark [options]  URL
-
+       bookmark [options]  -t
 
 Arguments:
     URL     The url to bookmark
@@ -28,17 +32,18 @@ Arguments:
             If URL is '-', then the program looks for a list of URL
             comming from the standard input.
     TAG     The tags to use with the url.
-            'all' is a special tag that matches every other tag
 
 Options:
-    -h, --help         Print this help and exit
-    -r, --remove       Remove TAG from URL
-    -d, --delete       Delete an url from the database
-    -l, --list-any     List the urls with any of TAG
-    -L, --list-every   List the urls with every of TAG
-    -f, --file FILE    Use FILE as the database
-                       Default is ~/.bookmarks
-    --no-path-subs     Disable file path substitution
+    -h, --help          Print this help and exit
+    -r, --remove        Remove TAG from URL
+    -d, --delete        Delete an url from the database
+    -l, --list-any      List the urls with any of TAG
+                        If no tag is given, list all urls
+    -L, --list-every    List the urls with every of TAG
+    -f, --file FILE     Use FILE as the database
+                        Default is ~/.bookmarks
+    -t, --tags          List every tag present in the database
+    -n, --no-path-subs  Disable file path substitution
 
 Example
 =======
@@ -67,7 +72,13 @@ Example
     $ bookmark -L bad search engine
     http://google.com
 
-    $ cat urls | bookmark - some_urls
+    $ bookmark -l
+    cool
+    engine
+    search
+    bad
+
+    $ cat urls | bookmark - atag
 
 
 Dependencies

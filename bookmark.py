@@ -89,11 +89,6 @@ def list_every(database, tags):
             yield url
 
 
-def list_tags(database, url):
-    for each in database[url]:
-        yield each
-
-
 def list_every_tags(database):
     result = set()
     for each in database:
@@ -110,10 +105,16 @@ def manage_url(url, tags, d_file, database, args):
         yaml.dump(database, open(d_file, 'w'))
 
     elif args["--list-any"]:
-        for url in list_any(database, tags):
+        result = list(list_any(database, tags))
+        result.sort()
+
+        for url in result:
             print(url)
 
     elif args["--list-every"]:
+        result = list(list_every(database, tags))
+        result.sort()
+
         for url in list_every(database, tags):
             print(url)
 
@@ -122,7 +123,9 @@ def manage_url(url, tags, d_file, database, args):
         yaml.dump(database, open(d_file, 'w'))
 
     elif args["--tags"]:
-        for tag in list_every_tags(database):
+        result = list(list_every_tags(database))
+        result.sort()
+        for tag in result:
             print(tag)
 
     elif args["TAG"]:
@@ -130,7 +133,7 @@ def manage_url(url, tags, d_file, database, args):
         yaml.dump(database, open(d_file, 'w'))
 
     else:
-        for tag in list_tags(database, url):
+        for tag in database[url]:
             print(tag)
 
 

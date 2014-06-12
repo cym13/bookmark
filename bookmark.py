@@ -50,9 +50,11 @@ Options:
     -n, --no-path-subs  Disable file path substitution
 """
 
+
 import os
-import yaml
+import msgpack
 from docopt import docopt
+
 
 def add(database, url, tags):
     if url in database:
@@ -100,7 +102,7 @@ def manage_urls(urls, tags, d_file, database, args):
     if args["--delete"]:
         for url in urls:
             delete(database, url)
-        yaml.dump(database, open(d_file, 'w'))
+        msgpack.dump(database, open(d_file, 'wb'))
 
     elif args["--list-any"]:
         for url in urls:
@@ -121,7 +123,7 @@ def manage_urls(urls, tags, d_file, database, args):
     elif args["--remove"]:
         for url in urls:
             remove(database, url, tags)
-        yaml.dump(database, open(d_file, 'w'))
+        #msgpack.dump(database, open(d_file, 'wb'))
 
     elif args["--tags"]:
         result = list(list_every_tags(database))
@@ -132,7 +134,7 @@ def manage_urls(urls, tags, d_file, database, args):
     elif args["TAG"]:
         for url in urls:
             add(database, url, tags)
-        yaml.dump(database, open(d_file, 'w'))
+        msgpack.dump(database, open(d_file, 'wb'))
 
     else:
         for url in urls:
@@ -155,7 +157,10 @@ def main():
                     file=os.sys.stderr)
             open(d_file, "a+").close()
 
-        database = yaml.load(open(d_file)) or {}
+        database = msgpack.load(open(d_file, "rb"), encoding="utf-8")
+
+    except msgpack.exceptions.UnpackValueError:
+        database = {}
 
     except PermissionError as e:
         os.sys.exit(e)
@@ -165,12 +170,14 @@ def main():
     if not args["--no-path-subs"] and urls != [ None ]:
         lst = []
         for url in urls:
+            url = str(url)
             if os.path.exists(url):
                 lst.append(os.path.abspath(url))
             else:
                 lst.append(url)
 
     manage_urls(urls, tags, d_file, database, args)
+
 
 if __name__ == "__main__":
     try:

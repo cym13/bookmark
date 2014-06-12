@@ -96,30 +96,31 @@ def list_every_tags(database):
     return result
 
 
-def manage_url(url, tags, d_file, database, args):
-    if url and os.path.exists(url) and not args["--no-path-subs"]:
-        url = os.path.abspath(url)
-
+def manage_urls(urls, tags, d_file, database, args):
     if args["--delete"]:
-        delete(database, url)
+        for url in urls:
+            delete(database, url)
         yaml.dump(database, open(d_file, 'w'))
 
     elif args["--list-any"]:
-        result = list(list_any(database, tags))
-        result.sort()
+        for url in urls:
+            result = list(list_any(database, tags))
+            result.sort()
 
-        for url in result:
-            print(url)
+            for each in result:
+                print(each)
 
     elif args["--list-every"]:
-        result = list(list_every(database, tags))
-        result.sort()
+        for url in urls:
+            result = list(list_every(database, tags))
+            result.sort()
 
-        for url in list_every(database, tags):
-            print(url)
+            for each in list_every(database, tags):
+                print(each)
 
     elif args["--remove"]:
-        remove(database, url, tags)
+        for url in urls:
+            remove(database, url, tags)
         yaml.dump(database, open(d_file, 'w'))
 
     elif args["--tags"]:
@@ -129,7 +130,8 @@ def manage_url(url, tags, d_file, database, args):
             print(tag)
 
     elif args["TAG"]:
-        add(database, url, tags)
+        for url in urls:
+            add(database, url, tags)
         yaml.dump(database, open(d_file, 'w'))
 
     else:
@@ -143,7 +145,7 @@ def main():
     if args["URL"] == '-':
         urls = os.sys.stdin.read().splitlines()
     else:
-        urls = [ args["URL"] ]
+        urls = list(args["URL"])
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
     try:
@@ -158,9 +160,11 @@ def main():
         os.sys.exit(e)
 
     tags = args["TAG"]
-    for url in urls:
-        manage_url(url, tags, d_file, database, args)
 
+    if not args["--no-path-subs"]:
+        urls = [ os.path.abspath(x) for x in urls if os.path.exists(x) ]
+
+    manage_urls(urls, tags, d_file, database, args)
 
 if __name__ == "__main__":
     try:

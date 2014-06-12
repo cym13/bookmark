@@ -135,8 +135,9 @@ def manage_urls(urls, tags, d_file, database, args):
         yaml.dump(database, open(d_file, 'w'))
 
     else:
-        for tag in database[url]:
-            print(tag)
+        for url in urls:
+            for tag in database[url]:
+                print(tag)
 
 
 def main():
@@ -145,7 +146,7 @@ def main():
     if args["URL"] == '-':
         urls = os.sys.stdin.read().splitlines()
     else:
-        urls = list(args["URL"])
+        urls = [ args["URL"] ]
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
     try:
@@ -161,8 +162,13 @@ def main():
 
     tags = args["TAG"]
 
-    if not args["--no-path-subs"]:
-        urls = [ os.path.abspath(x) for x in urls if os.path.exists(x) ]
+    if not args["--no-path-subs"] and urls != [ None ]:
+        lst = []
+        for url in urls:
+            if os.path.exists(url):
+                lst.append(os.path.abspath(url))
+            else:
+                lst.append(url)
 
     manage_urls(urls, tags, d_file, database, args)
 

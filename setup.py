@@ -1,5 +1,7 @@
-# From https://raw.githubusercontent.com/pypa/sampleproject/master/setup.py
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+# From https://raw.githubusercontent.com/pypa/sampleproject/master/setup.py
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
@@ -10,7 +12,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='1.0.0',
+    version='1.0.2',
 
     description='Simple command line bookmark and/or tagging utility.',
 

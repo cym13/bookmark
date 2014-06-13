@@ -24,12 +24,12 @@ THIS VERSION IS STABLE.
 Documentation
 =============
 
-Usage: bookmark [options] [-r] URL TAG...
-       bookmark [options]  -d  URL
-       bookmark [options]  -l  [TAG]...
-       bookmark [options]  -L  TAG...
-       bookmark [options]  URL
-       bookmark [options]  -t
+Usage: bm [options] [-r] URL TAG...
+       bm [options]  -d  URL
+       bm [options]  -l  [TAG]...
+       bm [options]  -L  TAG...
+       bm [options]  URL
+       bm [options]  -t
 
 Arguments:
     URL     The url to bookmark
@@ -55,37 +55,37 @@ Options:
 Example
 =======
 
-    $ bookmark "http://duckduckgo.com" bad search engine
+    $ bm "http://duckduckgo.com" bad search engine
 
-    $ bookmark "http://google.com" bad search engine
+    $ bm "http://google.com" bad search engine
 
-    $ bookmark -l search engine
+    $ bm -l search engine
     http://duckduckgo.com
     http://google.com
 
-    $ bookmark -r "http://duckduckgo.com" bad
+    $ bm -r "http://duckduckgo.com" bad
 
-    $ bookmark "http://duckduckgo.com" cool
+    $ bm "http://duckduckgo.com" cool
 
-    $ bookmark "http://duckduckgo.com"
+    $ bm "http://duckduckgo.com"
     cool
     engine
     search
 
-    $ bookmark -L search engine
+    $ bm -L search engine
     http://duckduckgo.com
     http://google.com
 
-    $ bookmark -L bad search engine
+    $ bm -L bad search engine
     http://google.com
 
-    $ bookmark -l
+    $ bm -l
     cool
     engine
     search
     bad
 
-    $ cat urls | bookmark - atag
+    $ cat urls | bm - atag
 
 
 Installation

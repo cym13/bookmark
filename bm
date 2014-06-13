@@ -50,7 +50,7 @@ Options:
     -n, --no-path-subs  Disable file path substitution
 """
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 
 import os
 import msgpack
@@ -69,6 +69,9 @@ def remove(database, url, tags):
     try:
         for tag in tags:
             database[url].remove(tag)
+
+        if database[url] == []:
+            database.pop(url)
     except ValueError:
         pass
 
@@ -124,7 +127,7 @@ def manage_urls(urls, tags, d_file, database, args):
     elif args["--remove"]:
         for url in urls:
             remove(database, url, tags)
-        #msgpack.dump(database, open(d_file, 'wb'))
+        msgpack.dump(database, open(d_file, 'wb'))
 
     elif args["--tags"]:
         result = list(list_every_tags(database))

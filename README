@@ -1,7 +1,7 @@
 Description
 ===========
 
-Simple command line browser independant bookmark and/or tagging utility.
+Simple command line bookmark and/or tagging utility.
 
 In order to help using it to tag files and directories as well as urls, it
 recognises if the URL given is that of an existing file. If so, the absolute
@@ -14,6 +14,8 @@ Feel free to find other ways to use this program!
 
 Msgpack is used as is it highly portable, language agnostic and yet highly
 efficient.
+
+This script is written using python3.
 
 
 THIS VERSION IS STABLE.
@@ -84,6 +86,20 @@ Example
     bad
 
     $ cat urls | bookmark - atag
+
+
+Installation
+============
+
+The simplest method is to use:
+
+    pip install bm
+
+Otherwise, you can do when in this directory
+
+    python3 setup install
+
+This should install the dependancies as well.
 
 
 Dependencies

@@ -143,7 +143,7 @@ def manage_urls(urls, tags, d_file, database, args):
 
 
 def main():
-    args = docopt(__doc__)
+    args = docopt(__doc__, version="1.0.0")
 
     if args["URL"] == '-':
         urls = os.sys.stdin.read().splitlines()

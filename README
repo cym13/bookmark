@@ -1,9 +1,7 @@
 Description
 ===========
 
-Simple command line browser independant bookmark utility.
-
-The file generated is easy to modify by hand as it is written in YAML.
+Simple command line browser independant bookmark and/or tagging utility.
 
 In order to help using it to tag files and directories as well as urls, it
 recognises if the URL given is that of an existing file. If so, the absolute
@@ -13,6 +11,13 @@ ambiguity. This behaviour can be stopped by using the "--no-path-subs" option.
 One way to see this program is to consider it a simple hashmap utility for
 bash that associates a set of strings (the tags) to another one (the url).
 Feel free to find other ways to use this program!
+
+Msgpack is used as is it highly portable, language agnostic and yet highly
+efficient.
+
+
+THIS VERSION IS STABLE.
+
 
 Documentation
 =============
@@ -85,7 +90,7 @@ Dependencies
 ============
 
 docopt   https://github.com/docopt/docopt or "pip install docopt"
-pyyaml   http://pyyaml.org/               or "pip install pyyaml"
+msgpack  http://msgpack.org/              or "pip install msgpack-python"
 
 License
 =======

@@ -44,9 +44,9 @@ Options:
     -h, --help          Print this help and exit
     -r, --remove        Remove TAG from URL
     -d, --delete        Delete an url from the database
-    -l, --list-any      List the urls with any of TAG
+    -l, --list-every    List the urls with every of TAG
                         If no tag is given, list all urls
-    -L, --list-every    List the urls with every of TAG
+    -L, --list-any      List the urls with any of TAG
     -f, --file FILE     Use FILE as the database
                         Default is ~/.bookmarks
     -t, --tags          List every tag present in the database

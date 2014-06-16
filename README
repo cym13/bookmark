@@ -50,7 +50,10 @@ Options:
     -f, --file FILE     Use FILE as the database
                         Default is ~/.bookmarks
     -t, --tags          List every tag present in the database
+                        with how many times it is used.
+                        Output is sorted from the least to the most used.
     -n, --no-path-subs  Disable file path substitution
+    --version           Print current version number
 
 Example
 =======

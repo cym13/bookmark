@@ -47,11 +47,13 @@ Options:
     -f, --file FILE     Use FILE as the database
                         Default is ~/.bookmarks
     -t, --tags          List every tag present in the database
+                        with how many times it is used.
+                        Output is sorted from the least to the most used
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
 
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 
 import os
 import msgpack
@@ -97,10 +99,14 @@ def list_every(database, tags):
 
 
 def list_every_tags(database):
-    result = set()
+    tags = {}
     for each in database:
-        result = result.union(set(database[each]))
-    return result
+        for tag in database[each]:
+            try:
+                tags[tag] += 1
+            except KeyError:
+                tags[tag] = 1
+    return [(tags[x], x) for x in tags]
 
 
 def manage_urls(urls, tags, d_file, database, args):
@@ -131,10 +137,10 @@ def manage_urls(urls, tags, d_file, database, args):
         msgpack.dump(database, open(d_file, 'wb'))
 
     elif args["--tags"]:
-        result = list(list_every_tags(database))
+        result = list_every_tags(database)
         result.sort()
-        for tag in result:
-            print(tag)
+        for num, tag in result:
+            print("%s %s" % (tag, num))
 
     elif args["TAG"]:
         for url in urls:

@@ -12,7 +12,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version="1.0.9",
+    version="1.1.0",
 
     description='Simple command line bookmark and/or tagging utility.',
 
@@ -36,10 +36,19 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
+        'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+
+        'Environment :: Console',
+
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLV3+)',
+
+        'Operating System :: OS Independent',
+
+        'Topic :: Utilities'
     ],
 
     # What does your project relate to?

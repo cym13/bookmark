@@ -156,6 +156,14 @@ def manage_urls(urls, tags, d_file, database, args):
                 print(tag)
 
 
+def expand_paths(paths):
+    for path in paths:
+        if path is not None and os.path.exists(path):
+            yield os.path.abspath(path)
+        else:
+            yield path
+
+
 def main():
     args = docopt(__doc__, version=VERSION)
 
@@ -182,14 +190,8 @@ def main():
     except PermissionError as e:
         os.sys.exit(e)
 
-    if not args["--no-path-subs"] and urls != [ None ]:
-        lst = []
-        for url in urls:
-            url = str(url)
-            if os.path.exists(url):
-                url = os.path.abspath(url)
-            lst.append(url)
-        urls = lst
+    if not args["--no-path-subs"]:
+        urls = expand_paths(urls)
 
     manage_urls(urls, tags, d_file, database, args)
 

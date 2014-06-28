@@ -23,7 +23,6 @@ THIS VERSION IS STABLE.
 
 Documentation
 =============
-
 Usage: bm [options] [-r] URL TAG...
        bm [options]  -d  URL
        bm [options]  -l  [TAG]...
@@ -49,7 +48,7 @@ Options:
     -l, --list-every    List the urls with every of TAG
                         If no tag is given, list all urls
     -L, --list-any      List the urls with any of TAG
-    -f, --file FILE     Use FILE as the database
+    -f, --file FILE     Use FILE as the database, can be an url
                         Default is ~/.bookmarks
     -t, --tags          List every tag present in the database
                         with how many times it is used.

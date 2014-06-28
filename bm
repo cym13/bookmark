@@ -46,7 +46,7 @@ Options:
     -l, --list-every    List the urls with every of TAG
                         If no tag is given, list all urls
     -L, --list-any      List the urls with any of TAG
-    -f, --file FILE     Use FILE as the database
+    -f, --file FILE     Use FILE as the database, can be an url
                         Default is ~/.bookmarks
     -t, --tags          List every tag present in the database
                         with how many times it is used.
@@ -55,11 +55,13 @@ Options:
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-VERSION = "1.2.1"
+VERSION = "1.3.0"
 
 import os
+import tempfile
+import requests
 from msgpack import dump, load
-from msgpack.exceptions import UnpackValueError
+from msgpack.exceptions import UnpackValueError, ExtraData
 from docopt import docopt
 
 
@@ -125,6 +127,7 @@ def _list(database, urls, tags, method):
 def import_db(database, tags):
     paths = expand_paths(tags)
 
+
     for path in paths:
         db = open_db(path)
         for url in db:
@@ -181,8 +184,40 @@ def expand_paths(paths):
             yield path
 
 
-def open_db(path):
-    return load(open(path, "rb"), encoding="utf-8")
+def open_db(path, *, encoding="utf-8"):
+    try:
+        request  = requests.get(path)
+        database = request.content
+        encoding = request.encoding or "utf-8"
+
+        tmp_file = True
+        path = tempfile.mktemp()
+
+        open(path, "wb").write(database)
+
+
+    except requests.exceptions.MissingSchema:
+        tmp_file = False
+        encoding = "utf-8"
+
+    finally:
+        database = open(path, "rb")
+
+        if tmp_file:
+            os.remove(path)
+
+    try:
+        data = load(database, encoding=encoding)
+
+    except FileNotFoundError:
+        print("File not found: " + path, file=os.sys.stderr)
+        data = []
+
+    except ExtraData:
+        print("Page not found: " + request.url, file=os.sys.stderr)
+        data = []
+
+    return data
 
 
 def main():
@@ -198,7 +233,7 @@ def main():
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
     try:
-        if not os.path.exists(d_file):
+        if not os.path.exists(d_file) and "tp://" not in d_file:
             print('The file "' + d_file + '" does not exist: creating it.',
                     file=os.sys.stderr)
             open(d_file, "a+").close()

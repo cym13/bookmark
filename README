@@ -29,7 +29,7 @@ Usage: bm [options] [-r] URL TAG...
        bm [options]  -l  [TAG]...
        bm [options]  -L  TAG...
        bm [options]  URL
-       bm [options]  -u  SOURCE...
+       bm [options]  -i  SOURCE...
        bm [options]  -t
 
 Arguments:
@@ -54,7 +54,7 @@ Options:
     -t, --tags          List every tag present in the database
                         with how many times it is used.
                         Output is sorted from the least to the most used
-    -u, --unite         Unite bookmarks from sources into the database.
+    -i, --import        Import bookmarks from sources into the database.
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 

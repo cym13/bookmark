@@ -26,7 +26,7 @@ Usage: bm [options] [-r] URL TAG...
        bm [options]  -l  [TAG]...
        bm [options]  -L  TAG...
        bm [options]  URL
-       bm [options]  -u  SOURCE...
+       bm [options]  -i  SOURCE...
        bm [options]  -t
 
 Arguments:
@@ -51,11 +51,11 @@ Options:
     -t, --tags          List every tag present in the database
                         with how many times it is used.
                         Output is sorted from the least to the most used
-    -u, --unite         Unite bookmarks from sources into the database.
+    -i, --import        Import bookmarks from sources into the database.
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 
 import os
 from msgpack import dump, load
@@ -122,6 +122,15 @@ def _list(database, urls, tags, method):
     return result
 
 
+def import_db(database, tags):
+    paths = expand_paths(tags)
+
+    for path in paths:
+        db = open_db(path)
+        for url in db:
+            add(database, url, db[url])
+
+
 def manage_urls(urls, tags, d_file, database, args):
     if args["--delete"]:
         for url in urls:
@@ -147,12 +156,9 @@ def manage_urls(urls, tags, d_file, database, args):
         for num, tag in result:
             print("%s %s" % (tag, num))
 
-    elif args["--unite"]:
-        paths = expand_paths(tags)
-        for path in paths:
-            db = load(open(path, "rb"), encoding="utf-8")
-            for url in db:
-                add(database, url, db[url])
+    elif args["--import"]:
+        for url in urls:
+            import_db(database, url, tags)
         dump(database, open(d_file, 'wb'))
 
     elif args["TAG"]:
@@ -170,8 +176,13 @@ def expand_paths(paths):
     for path in paths:
         if path is not None and os.path.exists(path):
             yield os.path.abspath(path)
+
         else:
             yield path
+
+
+def open_db(path):
+    return load(open(path, "rb"), encoding="utf-8")
 
 
 def main():
@@ -192,7 +203,7 @@ def main():
                     file=os.sys.stderr)
             open(d_file, "a+").close()
 
-        database = load(open(d_file, "rb"), encoding="utf-8")
+        database = open_db(d_file)
 
     except UnpackValueError:
         database = {}

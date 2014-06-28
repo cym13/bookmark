@@ -26,6 +26,7 @@ Usage: bm [options] [-r] URL TAG...
        bm [options]  -l  [TAG]...
        bm [options]  -L  TAG...
        bm [options]  URL
+       bm [options]  -u  SOURCE...
        bm [options]  -t
 
 Arguments:
@@ -36,6 +37,7 @@ Arguments:
             If URL is '-', then the program looks for a list of URL
             comming from the standard input.
     TAG     The tags to use with the url.
+    SOURCE  When uniting, the paths to the source files.
 
 Options:
     -h, --help          Print this help and exit
@@ -49,11 +51,11 @@ Options:
     -t, --tags          List every tag present in the database
                         with how many times it is used.
                         Output is sorted from the least to the most used
+    -u, --unite         Unite bookmarks from sources into the database.
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-
-VERSION = "1.0.9"
+VERSION = "1.2.0"
 
 import os
 from msgpack import dump, load
@@ -145,6 +147,14 @@ def manage_urls(urls, tags, d_file, database, args):
         for num, tag in result:
             print("%s %s" % (tag, num))
 
+    elif args["--unite"]:
+        paths = expand_paths(tags)
+        for path in paths:
+            db = load(open(path, "rb"), encoding="utf-8")
+            for url in db:
+                add(database, url, db[url])
+        dump(database, open(d_file, 'wb'))
+
     elif args["TAG"]:
         for url in urls:
             add(database, url, tags)
@@ -167,7 +177,7 @@ def expand_paths(paths):
 def main():
     args = docopt(__doc__, version=VERSION)
 
-    tags = args["TAG"]
+    tags = args["TAG"] or args["SOURCE"]
 
     if args["URL"] == '-':
         urls = os.sys.stdin.read().splitlines()

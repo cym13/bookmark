@@ -55,7 +55,7 @@ Options:
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-VERSION = "1.3.3"
+VERSION = "1.3.4"
 
 import os
 import tempfile
@@ -195,7 +195,7 @@ def expand_paths(paths):
 
 
 def open_db(path, *, encoding="utf-8"):
-    if "tp://" in path:
+    if "://" in path:
         import requests
 
         try:

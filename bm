@@ -55,7 +55,7 @@ Options:
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 import os
 import tempfile
@@ -138,7 +138,7 @@ def manage_urls(urls, tags, d_file, database, args):
     if args["--delete"]:
         for url in urls:
             delete(database, url)
-        dump(database, open(d_file, 'wb'))
+        dump_db(database, d_file)
 
     elif args["--list-any"]:
         for each in _list(database, urls, tags, list_any):
@@ -151,7 +151,7 @@ def manage_urls(urls, tags, d_file, database, args):
     elif args["--remove"]:
         for url in urls:
             remove(database, url, tags)
-        dump(database, open(d_file, 'wb'))
+        dump_db(database, d_file)
 
     elif args["--tags"]:
         result = list_every_tags(database)
@@ -162,17 +162,28 @@ def manage_urls(urls, tags, d_file, database, args):
     elif args["--import"]:
         for url in urls:
             import_db(database, url, tags)
-        dump(database, open(d_file, 'wb'))
+        dump_db(database, d_file)
 
     elif args["TAG"]:
         for url in urls:
             add(database, url, tags)
-        dump(database, open(d_file, 'wb'))
+        dump_db(database, d_file)
 
     else:
         for url in urls:
             for tag in database[url]:
                 print(tag)
+
+
+def dump_db(database, d_file):
+    try:
+        dump(database, open(d_file, 'wb'))
+
+    except FileNotFoundError:
+        print("File not found: " + d_file, file=os.sys.stderr)
+
+    except requests.exceptions.ConnectionError:
+        print("Connection impossible: " + d_file, file=os.sys.stderr)
 
 
 def expand_paths(paths):
@@ -200,13 +211,8 @@ def open_db(path, *, encoding="utf-8"):
         tmp_file = False
         encoding = "utf-8"
 
-    finally:
-        database = open(path, "rb")
-
-        if tmp_file:
-            os.remove(path)
-
     try:
+        database = open(path, "rb")
         data = load(database, encoding=encoding)
 
     except FileNotFoundError:
@@ -216,6 +222,14 @@ def open_db(path, *, encoding="utf-8"):
     except ExtraData:
         print("Page not found: " + request.url, file=os.sys.stderr)
         data = []
+
+    except requests.exceptions.ConnectionError:
+        print("Connection impossible: " + request.url, file=os.sys.stderr)
+        data = []
+
+    finally:
+        if tmp_file:
+            os.remove(path)
 
     return data
 
@@ -245,6 +259,10 @@ def main():
 
     except PermissionError as e:
         os.sys.exit(e)
+
+    except requests.exceptions.ConnectionError:
+        print("Connection impossible: " + d_file, file=os.sys.stderr)
+        os.sys.exit(1)
 
     if not args["--no-path-subs"]:
         urls = expand_paths(urls)

@@ -55,11 +55,10 @@ Options:
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-VERSION = "1.3.1"
+VERSION = "1.3.2"
 
 import os
 import tempfile
-import requests
 from msgpack import dump, load
 from msgpack.exceptions import UnpackValueError, ExtraData
 from docopt import docopt
@@ -196,7 +195,9 @@ def expand_paths(paths):
 
 
 def open_db(path, *, encoding="utf-8"):
-    try:
+    if "tp://" in path:
+        import requests
+
         request  = requests.get(path)
         database = request.content
         encoding = request.encoding or "utf-8"
@@ -206,8 +207,7 @@ def open_db(path, *, encoding="utf-8"):
 
         open(path, "wb").write(database)
 
-
-    except requests.exceptions.MissingSchema:
+    else:
         tmp_file = False
         encoding = "utf-8"
 

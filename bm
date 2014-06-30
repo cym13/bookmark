@@ -55,13 +55,13 @@ Options:
     -n, --no-path-subs  Disable file path substitution
     --version           Print current version number
 """
-VERSION = "1.3.4"
+VERSION = "1.3.5"
 
 import os
 import tempfile
-from msgpack import dump, load
+from docopt             import docopt
+from msgpack            import dump, load
 from msgpack.exceptions import UnpackValueError, ExtraData
-from docopt import docopt
 
 
 def add(database, url, tags):
@@ -104,14 +104,13 @@ def list_every(database, tags):
 
 
 def list_every_tags(database):
-    tags = {}
-    for each in database:
-        for tag in database[each]:
-            try:
-                tags[tag] += 1
-            except KeyError:
-                tags[tag] = 1
-    return [(tags[x], x) for x in tags]
+    from collections import Counter
+
+    counter = Counter()
+    for url in database:
+        for tag in database[url]:
+            counter[tag] += 1
+    return [(t, x) for x,t in counter.items()]
 
 
 def _list(database, urls, tags, method):
@@ -254,7 +253,7 @@ def main():
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
 
     try:
-        if not os.path.exists(d_file) and "tp://" not in d_file:
+        if not os.path.exists(d_file) and "://" not in d_file:
             print('The file "' + d_file + '" does not exist: creating it.',
                     file=os.sys.stderr)
             open(d_file, "a+").close()

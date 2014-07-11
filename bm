@@ -53,9 +53,10 @@ Options:
                         Output is sorted from the least to the most used
     -i, --import        Import bookmarks from sources into the database.
     -n, --no-path-subs  Disable file path substitution
+    -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.3.6"
+VERSION = "1.4.0"
 
 import os
 import tempfile
@@ -132,47 +133,6 @@ def import_db(database, tags):
             add(database, url, db[url])
 
 
-def manage_urls(urls, tags, d_file, database, args):
-    if args["--delete"]:
-        for url in urls:
-            delete(database, url)
-        dump_db(database, d_file)
-
-    elif args["--list-any"]:
-        for each in _list(database, urls, tags, list_any):
-            print(each)
-
-    elif args["--list-every"]:
-        for each in _list(database, urls, tags, list_every):
-            print(each)
-
-    elif args["--remove"]:
-        for url in urls:
-            remove(database, url, tags)
-        dump_db(database, d_file)
-
-    elif args["--tags"]:
-        result = list_every_tags(database)
-        result.sort()
-        for num, tag in result:
-            print("%s %s" % (tag, num))
-
-    elif args["--import"]:
-        for url in urls:
-            import_db(database, tags)
-        dump_db(database, d_file)
-
-    elif args["TAG"]:
-        for url in urls:
-            add(database, url, tags)
-        dump_db(database, d_file)
-
-    else:
-        for url in urls:
-            for tag in database[url]:
-                print(tag)
-
-
 def dump_db(database, d_file):
     try:
         dump(database, open(d_file, 'wb'))
@@ -191,6 +151,45 @@ def expand_paths(paths):
 
         else:
             yield path
+
+
+def html_generator(tags, sites):
+    template = """
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>bookmark</title>
+      </head>
+      <body>
+        <h1>
+          {tags}
+        </h1>
+        <ol>
+          {sites}
+        </ol>
+      </body>
+    </html>
+    """
+    template = template.format(
+        tags  = ', '.join(tags),
+        sites = ('\n'+' '*10).join('<li><a href="{s}">{s}</a></li>'.format(s=x)
+                                  for x in sites))
+    return template
+
+
+def web_open(browser, html_src):
+    from subprocess import Popen
+    from time import sleep
+
+    path = "/tmp/bm-tmp"
+    try:
+        f = open(path, "w")
+        f.write(html_src)
+        Popen([browser, "file://" + path])
+        sleep(1)
+    finally:
+        f.close()
 
 
 def open_db(path, *, encoding="utf-8"):
@@ -237,6 +236,51 @@ def open_db(path, *, encoding="utf-8"):
             os.remove(path)
 
     return data
+
+
+def manage_urls(urls, tags, d_file, database, args):
+    if args["--delete"]:
+        for url in urls:
+            delete(database, url)
+        dump_db(database, d_file)
+
+    elif args["--list-any"] or args["--list-every"]:
+        if args["--list-any"]:
+            sites = _list(database, urls, tags, list_any)
+        else:
+            sites = _list(database, urls, tags, list_every)
+
+        if args["--web"]:
+            web_open(os.environ["BROWSER"], html_generator(tags, sites))
+        else:
+            for each in sites:
+                print(each)
+
+    elif args["--remove"]:
+        for url in urls:
+            remove(database, url, tags)
+        dump_db(database, d_file)
+
+    elif args["--tags"]:
+        result = list_every_tags(database)
+        result.sort()
+        for num, tag in result:
+            print("%s %s" % (tag, num))
+
+    elif args["--import"]:
+        for url in urls:
+            import_db(database, tags)
+        dump_db(database, d_file)
+
+    elif args["TAG"]:
+        for url in urls:
+            add(database, url, tags)
+        dump_db(database, d_file)
+
+    else:
+        for url in urls:
+            for tag in database[url]:
+                print(tag)
 
 
 def main():

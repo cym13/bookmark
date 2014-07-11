@@ -55,6 +55,7 @@ Options:
                         Output is sorted from the least to the most used
     -i, --import        Import bookmarks from sources into the database.
     -n, --no-path-subs  Disable file path substitution
+    -w, --web           Open the results in a web browser
     --version           Print current version number
 
 Example

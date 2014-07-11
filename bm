@@ -56,7 +56,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 
 import os
 import tempfile
@@ -186,10 +186,9 @@ def web_open(browser, html_src):
     try:
         f = open(path, "w")
         f.write(html_src)
-        Popen([browser, "file://" + path])
-        sleep(1)
     finally:
         f.close()
+    Popen([browser, "file://" + path])
 
 
 def open_db(path, *, encoding="utf-8"):

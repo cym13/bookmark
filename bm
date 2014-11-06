@@ -56,7 +56,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.4.1"
+VERSION = "1.4.2"
 
 import os
 import tempfile

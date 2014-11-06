@@ -60,9 +60,10 @@ VERSION = "1.4.1"
 
 import os
 import tempfile
-from docopt             import docopt
-from msgpack            import dump, load
-from msgpack.exceptions import UnpackValueError, ExtraData
+from docopt              import docopt
+from msgpack             import dump, load
+from msgpack.exceptions  import UnpackValueError, ExtraData
+from requests.exceptions import ConnectionError
 
 
 def add(database, url, tags):
@@ -140,7 +141,7 @@ def dump_db(database, d_file):
     except FileNotFoundError:
         print("File not found: " + d_file, file=os.sys.stderr)
 
-    except requests.exceptions.ConnectionError:
+    except ConnectionError:
         print("Connection impossible: " + d_file, file=os.sys.stderr)
 
 
@@ -205,7 +206,7 @@ def open_db(path, *, encoding="utf-8"):
 
             open(path, "wb").write(database)
 
-        except requests.exceptions.ConnectionError:
+        except ConnectionError:
             print("Connection impossible: " + path, file=os.sys.stderr)
             data = []
             return data
@@ -226,7 +227,7 @@ def open_db(path, *, encoding="utf-8"):
         print("Page not found: " + request.url, file=os.sys.stderr)
         data = []
 
-    except requests.exceptions.ConnectionError:
+    except ConnectionError:
         print("Connection impossible: " + request.url, file=os.sys.stderr)
         data = []
 
@@ -299,7 +300,7 @@ def main():
         if not os.path.exists(d_file) and "://" not in d_file:
             print('The file "' + d_file + '" does not exist: creating it.',
                     file=os.sys.stderr)
-            open(d_file, "a+").close()
+            dump_db({}, d_file)
 
         database = open_db(d_file)
 

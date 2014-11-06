@@ -107,6 +107,10 @@ Otherwise, you can do when in this directory
 
 This should install the dependancies as well.
 
+An AUR package is available for archlinux as well:
+
+    yaourt -S bm
+
 
 Dependencies
 ============

@@ -53,6 +53,7 @@ Options:
                         Output is sorted from the least to the most used
     -i, --import        Import bookmarks from sources into the database.
     -n, --no-path-subs  Disable file path substitution
+    -v, --verbose       Displays the list of tags of eacch url when listing
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
@@ -93,16 +94,22 @@ def delete(database, url):
         pass
 
 
-def list_any(database, tags):
+def list_any(database, tags, *, verbose=False):
     for url in database:
-        if set(tags).intersection(set(database[url])) != set() or tags == []:
-            yield url
+        if set(tags).intersection(set(database[url]))!=set() or tags==[]:
+            if not verbose:
+                yield url
+            else:
+                yield url, database[url]
 
 
-def list_every(database, tags):
+def list_every(database, tags, *, verbose=False):
     for url in database:
         if set(tags).issubset(set(database[url])):
-            yield url
+            if not verbose:
+                yield url
+            else:
+                yield url, database[url]
 
 
 def list_every_tags(database):
@@ -115,12 +122,17 @@ def list_every_tags(database):
     return [(t, x) for x,t in counter.items()]
 
 
-def _list(database, urls, tags, method):
+def _list(database, urls, tags, method, verbose):
     result = []
     for url in urls:
-        result += list(method(database, tags))
+        result += list(method(database, tags, verbose=verbose))
 
-    result.sort()
+    if not verbose:
+        result.sort()
+
+    else:
+        result.sort(key=lambda x:x[0])
+
     return result
 
 
@@ -155,6 +167,7 @@ def expand_paths(paths):
 
 
 def html_generator(tags, sites):
+    li_html  = '<li><a href="{u}">{u}</a> {t}</li>'
     template = """
     <!DOCTYPE html>
     <html>
@@ -174,7 +187,8 @@ def html_generator(tags, sites):
     """
     template = template.format(
         tags  = ', '.join(tags),
-        sites = ('\n'+' '*10).join('<li><a href="{s}">{s}</a></li>'.format(s=x)
+        sites = ('\n'+' '*10).join(li_html.format(u = x.split()[0],
+                                                  t = ','.join(x.split()[2:]))
                                   for x in sites))
     return template
 
@@ -239,6 +253,8 @@ def open_db(path, *, encoding="utf-8"):
 
 
 def manage_urls(urls, tags, d_file, database, args):
+    verbose = args["--verbose"]
+
     if args["--delete"]:
         for url in urls:
             delete(database, url)
@@ -246,9 +262,12 @@ def manage_urls(urls, tags, d_file, database, args):
 
     elif args["--list-any"] or args["--list-every"]:
         if args["--list-any"]:
-            sites = _list(database, urls, tags, list_any)
+            sites = _list(database, urls, tags, list_any, verbose)
         else:
-            sites = _list(database, urls, tags, list_every)
+            sites = _list(database, urls, tags, list_every, verbose)
+
+        if verbose:
+            sites = [ x[0] + ' : ' + ' '.join(x[1]) for x in sites ]
 
         if args["--web"]:
             web_open(os.environ["BROWSER"], html_generator(tags, sites))

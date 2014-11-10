@@ -57,7 +57,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 
 import os
 import tempfile
@@ -167,7 +167,7 @@ def expand_paths(paths):
 
 
 def html_generator(tags, sites):
-    li_html  = '<li><a href="{u}">{u}</a> {t}</li>'
+    li_html  = '<li><a href="{u}">{u}</a><p>{t}</p></li>'
     template = """
     <!DOCTYPE html>
     <html>

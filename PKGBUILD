@@ -10,7 +10,8 @@ license=('GPL')
 depends=('python>=3'
          'python-docopt'
          'python-msgpack'
-         'python-requests')
+         'python-requests'
+         'python-setuptools')
 source=(https://pypi.python.org/packages/source/b/bm/bm-${pkgver}.tar.gz)
 md5sums=('5cdd61ffddfba91eac45637aa8507e2d')
 

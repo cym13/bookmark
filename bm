@@ -197,7 +197,7 @@ def web_open(browser, html_src):
     from subprocess import Popen
     from time import sleep
 
-    path = "/tmp/bm-tmp"
+    path = "/tmp/bm-tmp.html"
     try:
         f = open(path, "w")
         f.write(html_src)

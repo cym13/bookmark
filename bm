@@ -341,3 +341,5 @@ if __name__ == "__main__":
     except KeyError as e:
         print("No such bookmark:", e, file=os.sys.stderr)
         os.sys.exit(1)
+    except BrokenPipeError as e:
+        pass

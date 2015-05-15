@@ -60,7 +60,6 @@ Options:
 VERSION = "1.5.3"
 
 import os
-import tempfile
 from docopt              import docopt
 from msgpack             import dump, load
 from msgpack.exceptions  import UnpackValueError, ExtraData
@@ -230,6 +229,7 @@ def web_open(browser, html_src):
 def open_db(path, *, encoding="utf-8"):
     if "://" in path:
         import requests
+        import tempfile
 
         try:
             request  = requests.get(path)

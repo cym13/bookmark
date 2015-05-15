@@ -2,4 +2,5 @@ bm.egg-info
 build
 dist
 test
+src
 *.tar.gz

@@ -57,7 +57,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.5.3"
+VERSION = "1.5.4"
 
 import os
 from docopt              import docopt

@@ -67,6 +67,7 @@ from msgpack.exceptions  import UnpackValueError, ExtraData
 ## Atomic database mutations
 
 def add(database, url, tags):
+    """ Add `tags' to `url' in `database' """
     if url in database:
         for tag in tags:
             if tag not in database[url]:
@@ -76,6 +77,7 @@ def add(database, url, tags):
 
 
 def remove(database, url, tags):
+    """ Removes `tags' from `url' in `database' """
     try:
         for tag in tags:
             database[url].remove(tag)
@@ -87,13 +89,19 @@ def remove(database, url, tags):
 
 
 def delete(database, url):
+    """ Removes `url' from `database' """
     try:
         database.pop(url)
     except KeyError:
         pass
 
+## Database listing and query functions
 
 def list_any(database, tags, *, verbose=False):
+    """
+    Yields any url in `database' with one of `tags'
+    If `verbose' is set yields tupples (url, tags)
+    """
     for url in database:
         if set(tags).intersection(set(database[url]))!=set() or tags==[]:
             if not verbose:
@@ -103,6 +111,10 @@ def list_any(database, tags, *, verbose=False):
 
 
 def list_every(database, tags, *, verbose=False):
+    """
+    Yields any url in `database' with each of `tags'
+    If `verbose' is set yields tupples (url, tags)
+    """
     for url in database:
         if set(tags).issubset(set(database[url])):
             if not verbose:
@@ -112,6 +124,7 @@ def list_every(database, tags, *, verbose=False):
 
 
 def list_every_tags(database):
+    """ Returnrs the list of every tags present in `database' """
     from collections import Counter
 
     counter = Counter()
@@ -122,22 +135,23 @@ def list_every_tags(database):
 
 
 def _list(database, urls, tags, method, verbose):
+    """ Internal dispatcher to listing functions """
     result = []
     for url in urls:
         result += list(method(database, tags, verbose=verbose))
 
     if not verbose:
         result.sort()
-
     else:
         result.sort(key=lambda x:x[0])
 
     return result
 
+## Database file Input/Output
 
-def import_db(database, tags):
-    paths = expand_paths(tags)
-
+def import_db(database, d_paths):
+    """ Merges each database in `d_paths' into `database' """
+    paths = expand_paths(d_paths)
 
     for path in paths:
         db = open_db(path)
@@ -146,26 +160,27 @@ def import_db(database, tags):
 
 
 def dump_db(database, d_file):
+    """ Writes `database' into `d_file' """
     try:
         dump(database, open(d_file, 'wb'))
 
     except FileNotFoundError:
         print("File not found: " + d_file, file=os.sys.stderr)
 
-    except ConnectionError:
-        print("Connection impossible: " + d_file, file=os.sys.stderr)
-
 
 def expand_paths(paths):
+    """ Yields the paths in `paths' expanded to absolute paths if possible """
     for path in paths:
         if path is not None and os.path.exists(path):
             yield os.path.abspath(path)
-
         else:
             yield path
 
+## Open in browser feature
 
+# If this grows, we'll have to put it in another file
 def html_generator(tags, sites):
+    """ Returns the html template of a page presenting tags and sites """
     li_html  = '<li><a href="{u}">{u}</a><p>{t}</p></li>'
     template = """
     <!DOCTYPE html>
@@ -193,6 +208,7 @@ def html_generator(tags, sites):
 
 
 def web_open(browser, html_src):
+    """ Creates and opens a page with `html_src' into the `browser' """
     from subprocess import Popen
     from time import sleep
 
@@ -204,8 +220,10 @@ def web_open(browser, html_src):
         f.close()
     Popen([browser, "file://" + path])
 
+## Main routines
 
 def open_db(path, *, encoding="utf-8"):
+    """ Opens a database at `path' and return its data """
     if "://" in path:
         import tempfile
         import requests
@@ -229,6 +247,7 @@ def open_db(path, *, encoding="utf-8"):
     else:
         tmp_file = False
         encoding = "utf-8"
+
 
     try:
         database = open(path, "rb")
@@ -254,6 +273,14 @@ def open_db(path, *, encoding="utf-8"):
 
 
 def manage_urls(urls, tags, d_file, database, args):
+    """
+    Manages action-oriented arguments
+        urls:     user provived urls
+        tags:     user provived tags
+        d_file:   database file for storage
+        database: reference to the current database
+        args:     command-line arguments dictionnary
+    """
     verbose = args["--verbose"]
 
     if args["--delete"]:
@@ -304,14 +331,15 @@ def manage_urls(urls, tags, d_file, database, args):
 
 
 def main():
+    """ Reception and preprocessing of command-line arguments """
     args = docopt(__doc__, version=VERSION)
 
     tags = args["TAG"] or args["SOURCE"]
 
     if args["URL"] == '-':
         urls = os.sys.stdin.read().splitlines()
-
     else:
+        # Only one url...but we still need an iterable
         urls = [ args["URL"] ]
 
     d_file = args["--file"] or os.environ["HOME"] + "/.bookmarks"
@@ -330,6 +358,7 @@ def main():
     except PermissionError as e:
         os.sys.exit(e)
 
+
     if not args["--no-path-subs"]:
         urls = expand_paths(urls)
 
@@ -337,6 +366,7 @@ def main():
 
 
 if __name__ == "__main__":
+    # This is a little rude but, hey, better late than never!
     try:
         main()
     except KeyError as e:

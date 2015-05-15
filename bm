@@ -64,28 +64,7 @@ from docopt              import docopt
 from msgpack             import dump, load
 from msgpack.exceptions  import UnpackValueError, ExtraData
 
-# Importing requests.exceptions.ConnectionError takes too long, copying it there
-
-class RequestException(IOError):
-    """There was an ambiguous exception that occurred while handling your
-    request."""
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize RequestException with `request` and `response` objects.
-        """
-        response = kwargs.pop('response', None)
-        self.response = response
-        self.request = kwargs.pop('request', None)
-        if (response is not None and not self.request and
-                hasattr(response, 'request')):
-            self.request = self.response.request
-        super(RequestException, self).__init__(*args, **kwargs)
-
-
-class ConnectionError(RequestException):
-    """A Connection error occurred."""
-
+## Atomic database mutations
 
 def add(database, url, tags):
     if url in database:
@@ -228,8 +207,9 @@ def web_open(browser, html_src):
 
 def open_db(path, *, encoding="utf-8"):
     if "://" in path:
-        import requests
         import tempfile
+        import requests
+        from   requests.exceptions import ConnectionError
 
         try:
             request  = requests.get(path)

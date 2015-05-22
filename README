@@ -23,44 +23,48 @@ THIS VERSION IS STABLE.
 
 Documentation
 =============
-Usage: bm [options] [-r] URL TAG...
-       bm [options]  -d  URL
-       bm [options]  -l  [TAG]...
-       bm [options]  -L  TAG...
-       bm [options]  URL
-       bm [options]  -i  SOURCE...
-       bm [options]  -t
+::
 
-Arguments:
-    URL     The url to bookmark
-            If alone, print the tags associated with URL
-            If the url corresponds to an existing file,
-            the absolute path is substituted to URL
-            If URL is '-', then the program looks for a list of URL
-            comming from the standard input.
-    TAG     The tags to use with the url.
-    SOURCE  When uniting, the paths to the source files.
+    Usage: bm [options] [-r] URL TAG...
+           bm [options]  -d  URL
+           bm [options]  -l  [TAG]...
+           bm [options]  -L  TAG...
+           bm [options]  URL
+           bm [options]  -i  SOURCE...
+           bm [options]  -t
 
-Options:
-    -h, --help          Print this help and exit
-    -r, --remove        Remove TAG from URL
-    -d, --delete        Delete an url from the database
-    -l, --list-every    List the urls with every of TAG
-                        If no tag is given, list all urls
-    -L, --list-any      List the urls with any of TAG
-    -f, --file FILE     Use FILE as the database, can be an url
-                        Default is ~/.bookmarks
-    -t, --tags          List every tag present in the database
-                        with how many times it is used.
-                        Output is sorted from the least to the most used
-    -i, --import        Import bookmarks from sources into the database.
-    -n, --no-path-subs  Disable file path substitution
-    -v, --verbose       Displays the list of tags of each url when listing
-    -w, --web           Open the results in a web browser
-    --version           Print current version number
+    Arguments:
+        URL     The url to bookmark
+                If alone, print the tags associated with URL
+                If the url corresponds to an existing file,
+                the absolute path is substituted to URL
+                If URL is '-', then the program looks for a list of URL
+                comming from the standard input.
+        TAG     The tags to use with the url.
+        SOURCE  When uniting, the paths to the source files.
+
+    Options:
+        -h, --help          Print this help and exit
+        -r, --remove        Remove TAG from URL
+        -d, --delete        Delete an url from the database
+        -l, --list-every    List the urls with every of TAG
+                            If no tag is given, list all urls
+        -L, --list-any      List the urls with any of TAG
+        -f, --file FILE     Use FILE as the database, can be an url
+                            Default is ~/.bookmarks
+        -t, --tags          List every tag present in the database
+                            with how many times it is used.
+                            Output is sorted from the least to the most used
+        -i, --import        Import bookmarks from sources into the database.
+        -n, --no-path-subs  Disable file path substitution
+        -v, --verbose       Displays the list of tags of each url when listing
+        -w, --web           Open the results in a web browser
+        --version           Print current version number
 
 Example
 =======
+
+::
 
     $ bm "http://duckduckgo.com" bad search engine
 
@@ -100,9 +104,13 @@ Installation
 
 The simplest method is to use:
 
+::
+
     pip install bm
 
 Otherwise, you can do when in this directory
+
+::
 
     python3 setup install
 
@@ -110,7 +118,45 @@ This should install the dependancies as well.
 
 An AUR package is available for archlinux as well:
 
+::
+
     yaourt -S bm
+
+
+And you, how do you use it?
+===========================
+
+As many cli tools, bm is thought the Unix way: with composability in mind.
+This is why it's output is mainly plain text, one entry per line with simple
+separators.
+
+I use urxvt and the urxvt-perls that allow fast link openning from the
+terminal.
+
+My main browser is qutebrowser but I had bm linked with dwb or firefox
+before. To do that I keep in my configuration two keybindings that execute
+external commands:
+
+::
+
+    set-cmd-text -s :spawn -- bm '{url}'
+        b
+    set-cmd-text -s :spawn -- bm -w -v -l
+        B
+
+That way, when on a page, I press b to bookmark the current url and just type
+the tags on the browser prompt. B is for searching, note how it uses the html
+display with -w to open the results in a new tab.
+
+For synchronisation I relay on a script that scp's the bookmark file between
+my computers and then does a local file import.
+
+As I work on some very big projects, I also use bm to bookmark paths and
+files so that I can quickly find an given set of files. To do that I have an
+alias 'alias fbm="bm -f .path_bm"' in order not to mix this work and other
+urls.
+
+These are only some examples of utilisation, I hope you'll find yours!
 
 
 Dependencies

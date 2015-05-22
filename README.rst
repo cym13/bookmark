@@ -168,7 +168,9 @@ Dependencies
 ============
 
 docopt   https://github.com/docopt/docopt or "pip install docopt"
-msgpack  http://msgpack.org/              or "pip install msgpack-python"
+
+msgpack  http://msgpack.org/ or "pip install msgpack-python"
+
 requests https://github.com/kennethreitz/requests or "pip install requests"
 
 License

@@ -153,8 +153,11 @@ my computers and then does a local file import.
 
 As I work on some very big projects, I also use bm to bookmark paths and
 files so that I can quickly find an given set of files. To do that I have an
-alias 'alias fbm="bm -f .path_bm"' in order not to mix this work and other
-urls.
+alias in order not to mix this work and other urls.
+
+::
+
+    alias fbm="bm -f .path_bm"
 
 These are only some examples of utilisation, I hope you'll find yours!
 

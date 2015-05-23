@@ -157,7 +157,7 @@ alias in order not to mix this work and other urls.
 
 ::
 
-    alias fbm="bm -f .path_bm"
+    alias fbm="bm -f ~/.path_bm"
 
 As bm automatically expands relative paths it is well suited to this usage.
 

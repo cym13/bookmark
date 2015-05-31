@@ -52,12 +52,13 @@ Options:
                         with how many times it is used.
                         Output is sorted from the least to the most used
     -i, --import        Import bookmarks from sources into the database.
+    -c, --clean         Clean database on loading, removing duplicates
     -n, --no-path-subs  Disable file path substitution
     -v, --verbose       Displays the list of tags of each url when listing
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.5.5"
+VERSION = "1.6.0"
 
 import os
 from docopt              import docopt
@@ -351,6 +352,10 @@ def main():
             dump_db({}, d_file)
 
         database = open_db(d_file)
+
+        if args["--clean"]:
+            for u,t in database.items():
+                database[u] = list(set(t))
 
     except UnpackValueError:
         database = {}

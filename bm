@@ -57,7 +57,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.5.4"
+VERSION = "1.5.5"
 
 import os
 from docopt              import docopt
@@ -73,7 +73,7 @@ def add(database, url, tags):
             if tag not in database[url]:
                 database[url].append(tag)
     else:
-        database[url] = list(tags)
+        database[url] = list(set(tags))
 
 
 def remove(database, url, tags):

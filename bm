@@ -117,7 +117,7 @@ def list_every(database, tags, *, verbose=False):
 
 
 def list_every_tags(database):
-    """ Returnrs the list of every tags present in `database' """
+    """ Returns the list of every tags present in `database' """
     from collections import Counter
 
     counter = Counter()
@@ -196,7 +196,7 @@ def html_generator(tags, sites):
         tags  = ', '.join(tags),
         sites = ('\n'+' '*10).join(li_html.format(u = x.split()[0],
                                                   t = ','.join(x.split()[2:]))
-                                  for x in sites))
+                                   for x in sites))
     return template
 
 

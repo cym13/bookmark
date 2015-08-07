@@ -121,11 +121,8 @@ def list_every_tags(database):
     from collections import Counter
 
     counter = Counter()
-    for url in database:
-        for tag in database[url]:
-            counter[tag] += 1
-    return [(t, x) for x,t in counter.items()]
-
+    for tags in database.values():
+        counter.update(tags)
 
 def _list(database, urls, tags, method, verbose):
     """ Internal dispatcher to listing functions """
@@ -148,8 +145,8 @@ def import_db(database, d_paths):
 
     for path in paths:
         db = open_db(path)
-        for url in db:
-            add(database, url, db[url])
+        for url,tags in db.items:
+            add(database, url, tags)
 
 
 def dump_db(database, d_file):

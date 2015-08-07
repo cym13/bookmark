@@ -193,11 +193,10 @@ def web_open(browser, html_src):
     from time import sleep
 
     path = "/tmp/bm-tmp.html"
-    try:
-        f = open(path, "w")
+
+    with open(path, "w") as f:
         f.write(html_src)
-    finally:
-        f.close()
+
     Popen([browser, "file://" + path])
 
 ## Main routines

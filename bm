@@ -69,32 +69,24 @@ from msgpack.exceptions  import UnpackValueError, ExtraData
 
 def add(database, url, tags):
     """ Add `tags' to `url' in `database' """
-    if url in database:
-        for tag in tags:
-            if tag not in database[url]:
-                database[url].append(tag)
-    else:
-        database[url] = list(set(tags))
+    database[url] = list(set(database.get(url, []))
+                            .union(tags))
 
 
 def remove(database, url, tags):
     """ Removes `tags' from `url' in `database' """
-    try:
-        for tag in tags:
-            database[url].remove(tag)
+    data = set(database.get(url, [])).difference(tags)
 
-        if database[url] == []:
-            database.pop(url)
-    except ValueError:
-        pass
+    if data:
+        database[url] = list(data)
+    else:
+        database.pop(url)
 
 
 def delete(database, url):
     """ Removes `url' from `database' """
-    try:
-        database.pop(url)
-    except KeyError:
-        pass
+    database.pop(url, None)
+
 
 ## Database listing and query functions
 

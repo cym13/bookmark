@@ -135,7 +135,7 @@ def import_db(database, d_paths):
 
     for path in paths:
         db = open_db(path)
-        for url,tags in db.items:
+        for url,tags in db.items():
             add(database, url, tags)
 
 

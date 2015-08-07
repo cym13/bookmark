@@ -126,8 +126,8 @@ An AUR package is available for archlinux as well:
 And you, how do you use it?
 ===========================
 
-As many cli tools, bm is thought the Unix way: with composability in mind.
-This is why it's output is mainly plain text, one entry per line with simple
+As many cli tools, bm is designed the Unix way: with composability in mind.
+This is why its output is mainly plain text, one entry per line with simple
 separators.
 
 I use urxvt and the urxvt-perls that allow fast link openning from the

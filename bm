@@ -124,18 +124,8 @@ def list_every_tags(database):
     for tags in database.values():
         counter.update(tags)
 
-def _list(database, urls, tags, method, verbose):
-    """ Internal dispatcher to listing functions """
-    result = []
-    for url in urls:
-        result += list(method(database, tags, verbose=verbose))
+    return ((t, x) for x,t in counter.items())
 
-    if not verbose:
-        result.sort()
-    else:
-        result.sort(key=lambda x:x[0])
-
-    return result
 
 ## Database file Input/Output
 
@@ -280,9 +270,9 @@ def manage_urls(urls, tags, d_file, database, args):
 
     elif args["--list-any"] or args["--list-every"]:
         if args["--list-any"]:
-            sites = _list(database, urls, tags, list_any, verbose)
+            sites = sorted(list_any(database, tags, verbose=verbose))
         else:
-            sites = _list(database, urls, tags, list_every, verbose)
+            sites = sorted(list_every(database, tags, verbose=verbose))
 
         if verbose:
             sites = [ x[0] + ' : ' + ' '.join(x[1]) for x in sites ]
@@ -299,9 +289,7 @@ def manage_urls(urls, tags, d_file, database, args):
         dump_db(database, d_file)
 
     elif args["--tags"]:
-        result = list_every_tags(database)
-        result.sort()
-        for num, tag in result:
+        for num, tag in sorted(list_every_tags(database)):
             print("%s %s" % (tag, num))
 
     elif args["--import"]:

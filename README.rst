@@ -25,6 +25,8 @@ Documentation
 =============
 ::
 
+    Simple command line browser independant bookmark utility.
+
     Usage: bm [options] [-r] URL TAG...
            bm [options]  -d  URL
            bm [options]  -l  [TAG]...
@@ -56,6 +58,7 @@ Documentation
                             with how many times it is used.
                             Output is sorted from the least to the most used
         -i, --import        Import bookmarks from sources into the database.
+        -c, --clean         Clean database on loading, removing duplicates
         -n, --no-path-subs  Disable file path substitution
         -v, --verbose       Displays the list of tags of each url when listing
         -w, --web           Open the results in a web browser
@@ -162,6 +165,18 @@ alias in order not to mix this work and other urls.
 As bm automatically expands relative paths it is well suited to this usage.
 
 These are only some personal examples, I hope you'll find yours!
+
+
+On the --clean option
+=====================
+
+There was a slight bug on version <1.6.0 that if you were creating a new
+entry with twice the same tag it wouldn't detect the doublon and store the
+tag twice.
+
+I decided not to risk breaking existing databases, so I added the --clean
+option that cleans a bugged database removing double tags. Also, the bug is
+fixed, so you shouldn't have to run it more than once.
 
 
 Dependencies

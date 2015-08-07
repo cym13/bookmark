@@ -343,15 +343,16 @@ def main():
     if not args["--no-path-subs"]:
         urls = expand_paths(urls)
 
-    manage_urls(urls, tags, d_file, database, args)
+    try:
+        manage_urls(urls, tags, d_file, database, args)
+    except KeyError as e:
+        print("No such bookmark:", e, file=os.sys.stderr)
+        os.sys.exit(1)
 
 
 if __name__ == "__main__":
     # This is a little rude but, hey, better late than never!
     try:
         main()
-    except KeyError as e:
-        print("No such bookmark:", e, file=os.sys.stderr)
-        os.sys.exit(1)
     except BrokenPipeError as e:
         pass

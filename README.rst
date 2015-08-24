@@ -109,6 +109,8 @@ Example
     engine
     search
     bad
+    python
+    official
 
     $ cat urls | bm - atag
 

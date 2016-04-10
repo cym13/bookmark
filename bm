@@ -58,7 +58,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.6.1"
+VERSION = "1.6.2"
 
 import os
 from docopt              import docopt
@@ -220,8 +220,12 @@ def open_db(path, *, encoding="utf-8"):
 
         except ConnectionError:
             print("Connection impossible: " + path, file=os.sys.stderr)
-            data = []
+            data = {}
             return data
+
+        except ExtraData:
+            print("Page not found: " + path, file=os.sys.stderr)
+            data = {}
 
     else:
         tmp_file = False
@@ -234,15 +238,11 @@ def open_db(path, *, encoding="utf-8"):
 
     except FileNotFoundError:
         print("File not found: " + path, file=os.sys.stderr)
-        data = []
+        data = {}
 
-    except ExtraData:
-        print("Page not found: " + request.url, file=os.sys.stderr)
-        data = []
-
-    except ConnectionError:
-        print("Connection impossible: " + request.url, file=os.sys.stderr)
-        data = []
+    except UnpackValueError:
+        print("Invalid database: " + path, file=os.sys.stderr)
+        data = {}
 
     finally:
         if tmp_file:

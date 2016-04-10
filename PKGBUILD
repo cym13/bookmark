@@ -1,7 +1,7 @@
 # Maintainer: Cédric Picard <cpicard@openmailbox.org>
 
 pkgname=bm
-pkgver=1.6.1
+pkgver=1.6.2
 pkgrel=1
 pkgdesc="Simple command line browser independant bookmark and tagging utility"
 arch=(any)

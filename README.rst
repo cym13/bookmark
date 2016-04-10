@@ -73,6 +73,8 @@ Example
 
     $ bm "http://google.com" bad search engine
 
+    $ bm "http://python.org" python official
+
     $ bm -l search engine
     http://duckduckgo.com
     http://google.com
@@ -86,18 +88,29 @@ Example
     engine
     search
 
-    $ bm -L search engine
+    $ bm -l search engine
     http://duckduckgo.com
     http://google.com
 
+    $ bm -l bad search engine
+    http://google.com
+
     $ bm -L bad search engine
+    http://duckduckgo.com
     http://google.com
 
     $ bm -l
+    http://duckduckgo.com
+    http://google.com
+    http://python.org
+
+    $ bm -t
     cool
     engine
     search
     bad
+    python
+    official
 
     $ cat urls | bm - atag
 

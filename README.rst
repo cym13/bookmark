@@ -164,7 +164,7 @@ That way, when on a page, I press b to bookmark the current url and just type
 the tags on the browser prompt. B is for searching, note how it uses the html
 display with -w to open the results in a new tab.
 
-For synchronisation I relay on a script that scp's the bookmark file between
+For synchronisation I relie on a script that scp's the bookmark file between
 my computers and then does a local file import.
 
 As I work on some very big projects, I also use bm to bookmark paths and
@@ -216,5 +216,3 @@ Contact
 
     Main developper: Cédric Picard
     Email:           cedric.picard@efrei.net
-    Twitter:         @Cym13
-    GPG:             383A 76B9 D68D 2BD6 9D2B  4716 E3B9 F4FE 5CED 42CB

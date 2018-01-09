@@ -4,3 +4,4 @@ dist
 test
 src
 *.tar.gz
+__pycache__/

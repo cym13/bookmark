@@ -58,7 +58,7 @@ Options:
     -w, --web           Open the results in a web browser
     --version           Print current version number
 """
-VERSION = "1.6.2"
+VERSION = "1.6.3"
 
 import os
 from docopt              import docopt
@@ -142,7 +142,7 @@ def import_db(database, d_paths):
 def dump_db(database, d_file):
     """ Writes `database' into `d_file' """
     try:
-        dump(database, open(d_file, 'wb'))
+        dump(database, open(d_file, 'wb'), use_bin_type=False)
 
     except FileNotFoundError:
         print("File not found: " + d_file, file=os.sys.stderr)

@@ -28,6 +28,7 @@ Usage: bm [options] [-r] URL TAG...
        bm [options]  URL
        bm [options]  -i  SOURCE...
        bm [options]  -t
+       bm [options]  -s  TRE
 
 Arguments:
     URL     The url to bookmark
@@ -38,6 +39,7 @@ Arguments:
             comming from the standard input.
     TAG     The tags to use with the url.
     SOURCE  When uniting, the paths to the source files.
+    TRE     Tag RegEx to search for tags.
 
 Options:
     -h, --help          Print this help and exit
@@ -51,6 +53,7 @@ Options:
     -t, --tags          List every tag present in the database
                         with how many times it is used.
                         Output is sorted from the least to the most used
+    -s, --searchtag TRE Search tags using regex
     -i, --import        Import bookmarks from sources into the database.
     -c, --clean         Clean database on loading, removing duplicates
     -n, --no-path-subs  Disable file path substitution
@@ -61,6 +64,7 @@ Options:
 VERSION = "1.6.3"
 
 import os
+import re
 from docopt              import docopt
 from msgpack             import dump, load
 from msgpack.exceptions  import UnpackValueError, ExtraData
@@ -123,6 +127,25 @@ def list_every_tags(database):
     counter = Counter()
     for tags in database.values():
         counter.update(tags)
+
+    return ((t, x) for x,t in counter.items())
+
+
+def search_tag(database, tre):
+    """
+    Returns the list of any tags present in `database'
+    matching the regular expression TRE.
+    """
+
+    from collections import Counter
+
+    trec = re.compile(tre)
+    
+    counter = Counter()
+    for tags in database.values():
+        for tag in tags:
+            if trec.search(tag):
+                counter.update((tag, ))
 
     return ((t, x) for x,t in counter.items())
 
@@ -286,6 +309,11 @@ def manage_urls(urls, tags, d_file, database, args):
         for url in urls:
             remove(database, url, tags)
         dump_db(database, d_file)
+
+    elif args["--searchtag"]:
+        tre = args["--searchtag"]
+        for num, tag in sorted(search_tag(database, tre)):
+            print("%s %s" % (tag, num))
 
     elif args["--tags"]:
         for num, tag in sorted(list_every_tags(database)):

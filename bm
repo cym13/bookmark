@@ -28,6 +28,8 @@ Usage: bm [options] [-r] URL TAG...
        bm [options]  URL
        bm [options]  -i  SOURCE...
        bm [options]  -t
+       bm [options]  --import-json
+       bm [options]  --export-json
 
 Arguments:
     URL     The url to bookmark
@@ -51,7 +53,9 @@ Options:
     -t, --tags          List every tag present in the database
                         with how many times it is used.
                         Output is sorted from the least to the most used
-    -i, --import        Import bookmarks from sources into the database.
+    -i, --import        Import bookmarks from sources into the database
+    -j, --export-json   Export the database to stdout in json format
+    -J, --import-json   Import the database from stdin in json format
     -c, --clean         Clean database on loading, removing duplicates
     -n, --no-path-subs  Disable file path substitution
     -v, --verbose       Displays the list of tags of each url when listing
@@ -64,6 +68,7 @@ import os
 from docopt              import docopt
 from msgpack             import dump, load
 from msgpack.exceptions  import UnpackValueError, ExtraData
+from json                import dump as jdump, load as jload
 
 ## Atomic database mutations
 
@@ -269,9 +274,9 @@ def manage_urls(urls, tags, d_file, database, args):
 
     elif args["--list-any"] or args["--list-every"]:
         if args["--list-any"]:
-            sites = sorted(list_any(database, tags, verbose=verbose))
+            sites = sorted(list_any(database, sorted(tags), verbose=verbose))
         else:
-            sites = sorted(list_every(database, tags, verbose=verbose))
+            sites = sorted(list_every(database, sorted(tags), verbose=verbose))
 
         if verbose:
             sites = [ x[0] + ' : ' + ' '.join(x[1]) for x in sites ]
@@ -294,6 +299,16 @@ def manage_urls(urls, tags, d_file, database, args):
     elif args["--import"]:
         for url in urls:
             import_db(database, tags)
+        dump_db(database, d_file)
+
+    elif args['--export-json']:
+        jdump({k: sorted(v) for k, v in database.items()},
+                os.sys.stdout, sort_keys=True, indent=4)
+
+    elif args['--import-json']:
+        imported_data = jload(os.sys.stdin)
+        for url, tags in imported_data.items():
+            add(database, url, tags)
         dump_db(database, d_file)
 
     elif args["TAG"]:

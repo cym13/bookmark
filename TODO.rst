@@ -1,2 +1,3 @@
-- Tag sets
 - Splitting and refactoring
+- Tag sets
+- Support adding from list of urls (cat urls | bm add - tag1 tag2)

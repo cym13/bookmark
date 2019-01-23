@@ -368,6 +368,7 @@ class Database:
         debug("Listing tags from {}".format(urls))
         stmt = " UNION ".join("SELECT tag FROM v_tag_url WHERE url=?"
                               for _ in urls)
+        debug(stmt)
         c.execute(stmt, urls)
 
         return { t[0]: None for t in c.fetchall() }
@@ -416,10 +417,12 @@ def format_urls(urls, fmt, search=[]):
     return (result + "\n").encode("utf-8")
 
 
-def output_tags(tags, fmt, web):
+def format_tags(tags, fmt):
+    verbose = None not in tags.values()
+
     if fmt == "msgpack":
         import msgpack
-        if None in tags.values():
+        if not verbose:
             return msgpack.dumps(tags.keys())
         else:
             return msgpack.dumps(
@@ -427,7 +430,7 @@ def output_tags(tags, fmt, web):
             )
 
     if fmt == "text":
-        if None in tags.values():
+        if not verbose:
             result =  '\n'.join(tags)
         else:
             result = '\n'.join("{} {}".format(tag, count)
@@ -435,7 +438,7 @@ def output_tags(tags, fmt, web):
 
     elif fmt == "json":
         import json
-        if None in tags.values():
+        if not verbose:
             result = json.dumps(tags.keys(), indent=4)
         else:
             result = json.dumps({ tag:count for tag,count in tags.items() },
@@ -545,9 +548,9 @@ def main():
                     db.import_file(f.read(), args["--format"])
 
     elif args["tags"]:
-        output_tags(db.tags(args["URL"]),
-                    args["--format"],
-                    args["--web"])
+        output(format_tags(db.tags(args["URL"]),
+                           args["--format"]),
+               args["--format"])
 
     db.close()
 

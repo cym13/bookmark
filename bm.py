@@ -368,6 +368,7 @@ class Database:
         debug("Listing tags from {}".format(urls))
         stmt = " UNION ".join("SELECT tag FROM v_tag_url WHERE url=?"
                               for _ in urls)
+        stmt += " ORDER BY tag"
         debug(stmt)
         c.execute(stmt, urls)
 

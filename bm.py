@@ -243,7 +243,7 @@ class Database:
 
         if fmt == "msgpack":
             import msgpack
-            content = msgpack.loads(data, encoding="utf-8")
+            content = msgpack.loads(data, raw=False)
 
         if fmt == "json":
             import json

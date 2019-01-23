@@ -397,7 +397,7 @@ def format_urls(urls, fmt, search=[]):
         if not verbose:
             result =  '\n'.join(urls)
         else:
-            result = '\n'.join("{} {}".format(url, ' '.join(tags))
+            result = '\n'.join("{} {}".format(url, ' '.join(map(str,tags)))
                                for url,tags in urls.items())
 
     elif fmt == "json":
@@ -431,7 +431,7 @@ def format_tags(tags, fmt):
 
     if fmt == "text":
         if not verbose:
-            result =  '\n'.join(tags)
+            result =  '\n'.join(map(str,tags))
         else:
             result = '\n'.join("{} {}".format(tag, count)
                                for tag,count in tags.items())
@@ -555,4 +555,7 @@ def main():
     db.close()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BrokenPipeError:
+        pass

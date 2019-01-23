@@ -497,7 +497,7 @@ def html_generator(search, sites):
     for url,tags in sites.items():
         if tags is None:
             tags = []
-        li_items.append(li_html.format(u=url, t=','.join(tags)))
+        li_items.append(li_html.format(u=url, t=','.join(map(str,tags))))
 
     template = template.format(tags=', '.join(search),
                                sites=('\n'+' '*10).join(li_items))

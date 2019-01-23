@@ -72,7 +72,10 @@ class Database:
         c.execute("""
             CREATE TABLE IF NOT EXISTS urls (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                url STRING NOT NULL, UNIQUE(url)
+                url STRING NOT NULL,
+                enabled_t TIMESTAMP WITH TIME ZONE,
+                disabled_t TIMESTAMP WITH TIME ZONE,
+                UNIQUE(url)
             );
         """)
 
@@ -87,14 +90,19 @@ class Database:
             CREATE TABLE IF NOT EXISTS x_tag_url (
                 id_tag INTEGER NOT NULL,
                 id_url INTEGER NOT NULL,
+                enabled_t TIMESTAMP WITH TIME ZONE,
+                disabled_t TIMESTAMP WITH TIME ZONE,
                 PRIMARY KEY (id_tag, id_url)
             );
         """)
 
         c.execute("""
-            CREATE TABLE IF NOT EXISTS tagset (
+            CREATE TABLE IF NOT EXISTS tagsets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name STRING NOT NULL, UNIQUE(name)
+                name STRING NOT NULL,
+                enabled_t TIMESTAMP WITH TIME ZONE,
+                disabled_t TIMESTAMP WITH TIME ZONE,
+                UNIQUE(name)
             );
         """)
 
@@ -102,16 +110,78 @@ class Database:
             CREATE TABLE IF NOT EXISTS x_tag_set (
                 id_tag INTEGER NOT NULL,
                 id_set INTEGER NOT NULL,
+                enabled_t TIMESTAMP WITH TIME ZONE,
+                disabled_t TIMESTAMP WITH TIME ZONE,
                 PRIMARY KEY (id_tag, id_set)
             );
         """)
 
         c.execute("""
+            CREATE VIEW IF NOT EXISTS enabled_urls (id, url) AS
+            SELECT id,url FROM urls
+            WHERE disabled_t is NULL
+            OR    enabled_t > disabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS disabled_urls (id, url) AS
+            SELECT id,url FROM urls
+            WHERE disabled_t > enabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS enabled_x_tag_url (id_tag, id_url) AS
+            SELECT id_tag,id_url FROM x_tag_url
+            WHERE disabled_t is NULL
+            OR    enabled_t > disabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS disabled_x_tag_url (id_tag, id_url) AS
+            SELECT id_tag,id_url FROM x_tag_url
+            WHERE disabled_t > enabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS enabled_tagsets (id, name) AS
+            SELECT id,name FROM tagsets
+            WHERE disabled_t is NULL
+            OR    enabled_t > disabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS disabled_tagsets (id, name) AS
+            SELECT id,name FROM tagsets
+            WHERE disabled_t > enabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS enabled_x_tag_set (id_tag, id_set) AS
+            SELECT id_tag,id_set FROM x_tag_set
+            WHERE disabled_t is NULL
+            OR    enabled_t > disabled_t;
+        """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS disabled_x_tag_set (id_tag, id_set) AS
+            SELECT id_tag,id_set FROM x_tag_set
+            WHERE disabled_t > enabled_t;
+        """)
+
+        c.execute("""
             CREATE VIEW IF NOT EXISTS v_tag_url (url, tag) AS
-            SELECT url,name FROM urls,tags,x_tag_url
+            SELECT url,name FROM urls,tags,enabled_x_tag_url
             WHERE urls.id=id_url
             AND   tags.id=id_tag;
         """)
+
+        c.execute("""
+            CREATE VIEW IF NOT EXISTS v_tag_set (tagsets, tag) AS
+            SELECT tagsets.name,tags.name FROM tagsets,tags,enabled_x_tag_set
+            WHERE tagsets.id=id_set
+            AND   tags.id=id_tag;
+        """)
+
 
         self.conn.commit()
 
@@ -123,17 +193,31 @@ class Database:
 
         c.execute("INSERT OR IGNORE INTO urls (url) VALUES (?)", [url])
 
+        c.execute("""
+            UPDATE urls SET enabled_t=CURRENT_TIME WHERE url=?;
+        """, [url])
+
         # Remove duplicates
         tag = set(tags)
 
         c.executemany("""
             INSERT OR IGNORE INTO tags (name) VALUES (?)
         """, ([tag] for tag in tags))
+
         c.executemany("""
-            INSERT OR IGNORE INTO x_tag_url (id_url, id_tag) VALUES (
+            INSERT OR IGNORE INTO x_tag_url
+            (id_url, id_tag)
+            VALUES (
                 (SELECT id FROM urls WHERE url=?),
                 (SELECT id FROM tags WHERE name=?)
             )
+        """, ((url, tag) for tag in tags))
+
+        c.executemany("""
+            UPDATE x_tag_url
+            SET enabled_t = CURRENT_TIME
+            WHERE id_url = (SELECT id FROM urls WHERE url=?)
+            AND   id_tag = (SELECT id FROM tags WHERE name=?);
         """, ((url, tag) for tag in tags))
 
         self.conn.commit()
@@ -151,14 +235,14 @@ class Database:
             c.execute(stmt, tags)
 
         else:
-            c.execute("SELECT url FROM urls ORDER BY url")
+            c.execute("SELECT url FROM enabled_urls ORDER BY url")
 
         urls = { u[0]: None for u in c.fetchall() }
 
         if list_tags:
             for url in urls.keys():
                 c.execute("""
-                    SELECT name FROM tags,x_tag_url,urls
+                    SELECT name FROM tags,enabled_x_tag_url,urls
                     WHERE id_url = urls.id
                     AND   id_tag = tags.id
                     AND   url    = ?
@@ -175,7 +259,8 @@ class Database:
         c = self.conn.cursor()
 
         c.executemany("""
-            DELETE FROM x_tag_url
+            UPDATE x_tag_url
+            SET disabled_t = CURRENT_TIME
             WHERE id_url = (SELECT id FROM urls WHERE url=?)
             AND   id_tag = (SELECT id FROM tags WHERE name=?);
         """, ((url, tag) for tag in tags))
@@ -195,7 +280,8 @@ class Database:
         debug("Cleaning unaffilliated urls")
 
         c.execute("""
-            DELETE FROM urls
+            UPDATE urls
+            SET disabled_t = CURRENT_TIME
             WHERE NOT EXISTS (
                 SELECT id_tag FROM x_tag_url
                 WHERE id_url=urls.id
@@ -210,12 +296,17 @@ class Database:
 
         c = self.conn.cursor()
 
-        c.executemany("DELETE FROM urls WHERE url=?", [urls])
+        c.executemany("""
+            UPDATE urls
+            SET disabled_t = CURRENT_TIME
+            WHERE url=?;
+        """, [urls])
 
         debug("Cleaning unaffilliated XREF")
 
         c.execute("""
-            DELETE FROM x_tag_url
+            UPDATE x_tag_url
+            SET disabled_t = CURRENT_TIME
             WHERE NOT EXISTS (
                 SELECT id FROM urls
                 WHERE id_url=urls.id
@@ -266,7 +357,7 @@ class Database:
             debug("Listing all tags")
 
             c.execute("""
-                SELECT name,count(id_url) FROM tags,x_tag_url
+                SELECT name,count(id_url) FROM tags,enabled_x_tag_url
                 WHERE id_tag=id
                 GROUP BY name
                 ORDER BY 2;

@@ -54,18 +54,19 @@ class Database:
         import sqlite3
 
         debug("Initializing database from file " + path)
+
         self.path = path
-        self.conn = sqlite3.connect(path)
-        self._init_db()
-
-
-    def _init_db(self):
         if not os.path.exists(self.path):
             try:
                 os.mkdir(os.path.split(self.path)[0])
             except FileExistsError:
                 pass
 
+        self.conn = sqlite3.connect(path)
+        self._init_db()
+
+
+    def _init_db(self):
         c = self.conn.cursor()
 
         c.execute("""

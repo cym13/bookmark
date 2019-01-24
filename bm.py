@@ -31,7 +31,6 @@ Options:
     --version           Print current version number and exit
     -d, --database DB   Path to the database to use
     -f, --format FMT    Input/Output format: text, json, msgpack, web
-    -w, --web           Output to a minimal web server
     -v, --verbose       Display tags alongside the URL while listing
 
 Conventions:

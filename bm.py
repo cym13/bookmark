@@ -39,7 +39,7 @@ Conventions:
     If used instead of a URL it will add tags to the set.
     If used instead of a tag it will act as if all tags in the set were listed.
 """
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 
 import os
 import sys

@@ -39,7 +39,7 @@ Conventions:
     If used instead of a URL it will add tags to the set.
     If used instead of a tag it will act as if all tags in the set were listed.
 """
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 
 import os
 import sys
@@ -228,6 +228,23 @@ class Database:
 
         c = self.conn.cursor()
 
+        if list_tags:
+            stmt = "SELECT url,group_concat(tag, ' ') FROM v_tag_url "
+
+            if tags:
+                stmt += "WHERE url in ("
+                stmt += " INTERSECT ".join(
+                        "SELECT url FROM v_tag_url WHERE tag=?"
+                        for _ in tags)
+                stmt += ")"
+
+            stmt += " GROUP BY url ORDER BY url;"
+
+            debug(stmt)
+            c.execute(stmt, tags)
+            return { x[0]:x[1].split(' ') for x in c.fetchall() }
+
+
         if tags:
             stmt = " INTERSECT ".join("SELECT url FROM v_tag_url WHERE tag=?"
                                       for _ in tags)
@@ -237,20 +254,7 @@ class Database:
         else:
             c.execute("SELECT url FROM enabled_urls ORDER BY url")
 
-        urls = { u[0]: None for u in c.fetchall() }
-
-        if list_tags:
-            for url in urls.keys():
-                c.execute("""
-                    SELECT name FROM tags,enabled_x_tag_url,enabled_urls
-                    WHERE id_url = enabled_urls.id
-                    AND   id_tag = tags.id
-                    AND   url    = ?
-                    ORDER BY url;
-                """, [url])
-                urls[url] = [ t[0] for t in c.fetchall() ]
-
-        return urls
+        return { u[0]: None for u in c.fetchall() }
 
 
     def remove(self, url, tags):

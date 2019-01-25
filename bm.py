@@ -469,7 +469,7 @@ def output(data, fmt):
     path = temp_dir + "bm.html"
     with open(path, "wb") as f:
         f.write(data)
-        webbrowser.open(path)
+    webbrowser.open(path)
 
 
 def html_generator(search, sites):

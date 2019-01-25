@@ -1,3 +1,4 @@
 - Splitting and refactoring
+- Export timestamps for propagation
 - Tag sets
 - Support adding from list of urls (cat urls | bm add - tag1 tag2)

@@ -170,15 +170,15 @@ class Database:
 
         c.execute("""
             CREATE VIEW IF NOT EXISTS v_tag_url (url, tag) AS
-            SELECT url,name FROM urls,tags,enabled_x_tag_url
-            WHERE urls.id=id_url
+            SELECT url,name FROM enabled_urls,tags,enabled_x_tag_url
+            WHERE enabled_urls.id=id_url
             AND   tags.id=id_tag;
         """)
 
         c.execute("""
             CREATE VIEW IF NOT EXISTS v_tag_set (tagsets, tag) AS
-            SELECT tagsets.name,tags.name FROM tagsets,tags,enabled_x_tag_set
-            WHERE tagsets.id=id_set
+            SELECT tagsets.name,tags.name FROM enabled_tagsets,tags,enabled_x_tag_set
+            WHERE enabled_tagsets.id=id_set
             AND   tags.id=id_tag;
         """)
 
@@ -194,7 +194,7 @@ class Database:
         c.execute("INSERT OR IGNORE INTO urls (url) VALUES (?)", [url])
 
         c.execute("""
-            UPDATE urls SET enabled_t=CURRENT_TIME WHERE url=?;
+            UPDATE urls SET enabled_t=CURRENT_TIMESTAMP WHERE url=?;
         """, [url])
 
         # Remove duplicates
@@ -215,7 +215,7 @@ class Database:
 
         c.executemany("""
             UPDATE x_tag_url
-            SET enabled_t = CURRENT_TIME
+            SET enabled_t = CURRENT_TIMESTAMP
             WHERE id_url = (SELECT id FROM urls WHERE url=?)
             AND   id_tag = (SELECT id FROM tags WHERE name=?);
         """, ((url, tag) for tag in tags))
@@ -242,8 +242,8 @@ class Database:
         if list_tags:
             for url in urls.keys():
                 c.execute("""
-                    SELECT name FROM tags,enabled_x_tag_url,urls
-                    WHERE id_url = urls.id
+                    SELECT name FROM tags,enabled_x_tag_url,enabled_urls
+                    WHERE id_url = enabled_urls.id
                     AND   id_tag = tags.id
                     AND   url    = ?
                     ORDER BY url;
@@ -260,7 +260,7 @@ class Database:
 
         c.executemany("""
             UPDATE x_tag_url
-            SET disabled_t = CURRENT_TIME
+            SET disabled_t = CURRENT_TIMESTAMP
             WHERE id_url = (SELECT id FROM urls WHERE url=?)
             AND   id_tag = (SELECT id FROM tags WHERE name=?);
         """, ((url, tag) for tag in tags))
@@ -281,7 +281,7 @@ class Database:
 
         c.execute("""
             UPDATE urls
-            SET disabled_t = CURRENT_TIME
+            SET disabled_t = CURRENT_TIMESTAMP
             WHERE NOT EXISTS (
                 SELECT id_tag FROM x_tag_url
                 WHERE id_url=urls.id
@@ -298,7 +298,7 @@ class Database:
 
         c.executemany("""
             UPDATE urls
-            SET disabled_t = CURRENT_TIME
+            SET disabled_t = CURRENT_TIMESTAMP
             WHERE url=?;
         """, [urls])
 
@@ -306,7 +306,7 @@ class Database:
 
         c.execute("""
             UPDATE x_tag_url
-            SET disabled_t = CURRENT_TIME
+            SET disabled_t = CURRENT_TIMESTAMP
             WHERE NOT EXISTS (
                 SELECT id FROM urls
                 WHERE id_url=urls.id

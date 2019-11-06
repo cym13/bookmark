@@ -526,8 +526,10 @@ def main():
         global debug
         debug = lambda *x,**kx: print("[debug]", *x, file=sys.stderr, **kx)
 
-    db = Database(args.get("--database",
-                  os.path.expanduser("~/.config/bm/bookmarks.sqlite")))
+    db = Database(os.path.expanduser(args["--database"] or
+                                     os.getenv('XDG_DATA_HOME',
+                                                default='~/.local/share')
+                                         + "/bm/bookmarks.sqlite"))
 
     if args["add"]:
         db.add(args["URL"][0], args["TAG"])

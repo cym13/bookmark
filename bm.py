@@ -186,7 +186,7 @@ class Database:
         self.conn.commit()
 
 
-    def add(self, url, tags):
+    def add(self, url, tags, *, commit=True):
         debug("Adding {} to {}".format(tags, url))
 
         c = self.conn.cursor()
@@ -220,7 +220,8 @@ class Database:
             AND   id_tag = (SELECT id FROM tags WHERE name=?);
         """, ((url, tag) for tag in tags))
 
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
 
 
     def list(self, tags,  list_tags):
@@ -351,8 +352,10 @@ class Database:
                 for x in data.decode("utf8").splitlines()
             }
 
+        # Only want to commit once after having added all URLs for efficiency
         for url,tags in content.items():
-            self.add(url, tags)
+            self.add(url, tags, commit=False)
+        self.conn.commit();
 
     def tags(self, urls):
         c = self.conn.cursor()

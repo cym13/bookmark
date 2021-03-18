@@ -19,43 +19,37 @@ Documentation
 =============
 ::
 
-   Simple command line browser independant bookmark utility
+    Simple command line browser independant bookmark utility
 
-   Usage: bm add    URL TAG...
-          bm list   [-f FMT] [-w] [-v] [TAG]...
-          bm tags   [-f FMT] [-w] [URL]...
-          bm remove URL TAG...
-          bm delete URL...
-          bm import [-f FMT] FILE...
+    Usage: bm add    [-d DB] URL TAG...
+           bm list   [-d DB] [-f FMT] [-v] [TAG]...
+           bm tags   [-d DB] [-f FMT] [URL]...
+           bm remove [-d DB] URL TAG...
+           bm delete [-d DB] URL...
+           bm import [-d DB] [-f FMT] FILE...
 
-   Commands:
-       add           Tag a URL
-       list          List URLs matching some tags
-                     If TAG is empty, outputs all urls
-       tags          List tags associated to URLs
-                     If URLs is empty, outputs all tags with statistics
-       remove        Remove TAGs from URLs
-       delete        Remove URLs from the database
-       import        Import URLs into the database
+    Commands:
+        add           Tag a URL
+        list          List URLs matching some tags
+                      If TAG is empty, outputs all urls
+        tags          List tags associated to URLs
+                      If URLs is empty, outputs all tags with statistics
+        remove        Remove TAGs from URLs
+        delete        Remove URLs from the database
+        import        Import URLs into the database
 
-   Arguments:
-       URL     An URL or path; if '-', looks for a list of URLs on stdin
-       TAG     A tag
-       FILE    Path to a file for import
-       GROUP   A set of tags; Using a group sets all the tags within that group
+    Arguments:
+        URL     An URL or path; if '-', looks for a list of URLs on stdin
+        TAG     A tag
+        FILE    Path to a file for import
+        GROUP   A set of tags; Using a group sets all the tags within that group
 
-   Options:
-       -h, --help          Print this help and exit
-       --version           Print current version number and exit
-       -d, --database DB   Path to the database to use
-       -f, --format FMT    Input/Output format: text, json, msgpack, web
-       -v, --verbose       Display tags alongside the URL while listing
-
-   Conventions:
-       bm supports the use of sets of tags.
-       Anything starting with the symbol + will be understood as a tag set.
-       If used instead of a URL it will add tags to the set.
-       If used instead of a tag it will act as if all tags in the set were listed.
+    Options:
+        -h, --help          Print this help and exit
+        --version           Print current version number and exit
+        -d, --database DB   Path to the database to use
+        -f, --format FMT    Input/Output format: text, json, msgpack, web
+        -v, --verbose       Display tags alongside the URL while listing
 
 Example
 =======
@@ -138,6 +132,15 @@ my computers and then does a local file import.
 
 These are only some personal examples, I hope you'll find yours!
 
+
+To be implemented
+=================
+
+bm will support the use of sets of tags. Anything starting with the symbol `+`
+will be understood as a tag set.  If used instead of a URL it will add tags
+to the set. If used instead of a tag it will act as if all tags in the set
+were listed. This will not involve a change of database since it already has
+the required tables (I'm just a slow coder).
 
 Dependencies
 ============

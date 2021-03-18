@@ -32,12 +32,6 @@ Options:
     -d, --database DB   Path to the database to use
     -f, --format FMT    Input/Output format: text, json, msgpack, web
     -v, --verbose       Display tags alongside the URL while listing
-
-Conventions:
-    bm supports the use of sets of tags.
-    Anything starting with the symbol + will be understood as a tag set.
-    If used instead of a URL it will add tags to the set.
-    If used instead of a tag it will act as if all tags in the set were listed.
 """
 VERSION = "2.0.2"
 
